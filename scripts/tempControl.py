@@ -5,6 +5,7 @@ import sys
 import time
 import datetime
 import Adafruit_DHT
+import mysql.connector
 import gspread
 import os
 import MySQLdb

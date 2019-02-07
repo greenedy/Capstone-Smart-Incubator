@@ -5,9 +5,17 @@ You're logged in already!
  
 {% else %}
 <form action="/login" method="POST">
-Please enter your credentials
-<input type="username" name="username" placeholder="Username">
-<input type="password" name="password" placeholder="Password">
-<input type="submit" value="Log in">
+    <h3>Please enter your credentials</h3>
+    <p>
+        <label>Username:
+            <input type="username" name="username" placeholder="Username">
+        </label>
+    </p>
+    <p>
+        <label>Password:
+            <input type="password" name="password" placeholder="Password">
+        </label>
+    </p>
+    <input type="submit" value="Log in">
 </form>{% endif %}
 {% endblock %}

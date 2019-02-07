@@ -1,5 +1,7 @@
-from flask import Flask
+
 from flask import Flask, flash, redirect, render_template, request, session, abort
+import mysql.connector
+import datetime
 import os
 
 app = Flask(__name__)
@@ -22,6 +24,31 @@ def do_admin_login():
     else:
         flash('wrong password!')
     return home()
+
+
+@app.route("/dashboard")
+def dashboardLoad():
+    # Connect to database
+    mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+    mycursor = mydb.cursor()
+
+    now = datetime.datetime.now()
+    timeString = now.strftime("%Y-%m-%d %H:%M")
+
+    mycursor.execute("SELECT * FROM incubator ORDER BY id DESC LIMIT 1")
+
+    myresult = mycursor.fetchall();
+
+    for row in myresult:
+        humidity = row[0]
+        temperature = row[1]
+
+    templateData = {
+        'humidity': humidity,
+        'temperature': temperature,
+        'time': timeString
+    }
+    return render_template('dashboard.html', **templateData)
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
