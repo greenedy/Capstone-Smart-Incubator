@@ -1,0 +1,37 @@
+{% block body %}
+<form action="/config" method="POST">
+    <h3>New Configuration</h3>
+    <p>
+        <label>Name:
+            <input type="name" name="name" placeholder="Name">
+        </label>
+    </p>
+    <p>
+        <label>Species:
+            <input type="species" name="species" placeholder="Species">
+        </label>
+    </p>
+    <p>
+        <label>Temperature:
+            <input type="temperature" name="temperature" placeholder="Temperature">
+        </label>
+    </p>
+    <p>
+        <label>Humidity:
+            <input type="humidity" name="humidity" placeholder="Humidity">
+        </label>
+    </p>
+    <p>
+        <label>Duration:
+            <input type="duration" name="duration" placeholder="Duration">
+        </label>
+    </p>
+
+    <p>
+        <label>Notes:
+            <input type="notes" name="notes" placeholder="Notes">
+        </label>
+    </p>
+    <input type="submit" value="Save">
+</form>
+{% endblock %}
