@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Configurations</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/static/css/style.css" rel="stylesheet" media="screen">
+</head>
+
+{% block body %}
+
+<div class="container-fluid">
+         <div class="row">
+             <nav class="col-md-2 navbar-left sidebar bg-light nav-pills">
+                  <div class="sidebar-sticky">
+                      <nav class="navbar navbar-light bg-light">
+                          <span class="navbar-brand mx-auto" >
+                            <img src="/static/image/egg-icon.svg" width="40" height="40" class="" alt="">
+                            <span class="navbar-brand mb-0 text-center h1 align-middle">Incubator</span>
+                          </span>
+                      </nav>
+                       <ul class="nav flex-column ">
+                          <li class="nav-item">
+                              <a class="nav-link" href="dashboard">Dashboard</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link active" href="configurations">Configurations</a>
+                          </li>
+                           <li class="nav-item">
+                               <a class="nav-link" href="settings">Settings</a>
+                          </li>
+                           <li class="nav-item">
+                               <a class="nav-link" href="help">Help</a>
+                          </li>
+                       </ul>
+                  </div>
+             </nav>
+
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="justify-content-between border-bottom pt-3">
+                    <h1 class="h2">Configurations</h1>
+                </div>
+
+                <div class="row pt-3">
+                        <div class="col-sm-12">
+                            <div class="card mb-12 shadow-sm">
+                                <div class="card-header">
+                                    <h4 class="my-0 font-weight-normal">Current Configuration</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <h6>Name: {{name}} </h6>
+                                            <h6>Species: {{species}} </h6>
+                                            <h6>Temperature to maintain: {{temperature}}°C</h6>
+                                            <h6>Humidity to maintain: {{humidity}}%</h6>
+                                            <h6>Incubating duration: {{incubateTime}}</h6>
+                                        </div>
+                                        <div class="col-sm-6">
+                                             <h6>Notes: {{notes}} </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <h6>Status: {{status}}</h6>
+                                    <h6>Current runtime: {{runtime}}</h6>
+                                </div>
+                            </div>
+                        </div>
+
+            <form action="/configurations" method="POST">
+                <h3>New Configuration</h3>
+                <p>
+                    <label>Name:
+                        <input type="name" name="name" placeholder="Name">
+                    </label>
+                </p>
+                <p>
+                    <label>Species:
+                        <input type="species" name="species" placeholder="Species">
+                    </label>
+                </p>
+                <p>
+                    <label>Temperature:
+                        <input type="temperature" name="temperature" placeholder="Temperature">
+                    </label>
+                </p>
+                <p>
+                    <label>Humidity:
+                        <input type="humidity" name="humidity" placeholder="Humidity">
+                    </label>
+                </p>
+                <p>
+                    <label>Duration:
+                        <input type="duration" name="duration" placeholder="Duration">
+                    </label>
+                </p>
+
+                <p>
+                    <label>Notes:
+                        <input type="notes" name="notes" placeholder="Notes">
+                    </label>
+                </p>
+                <input type="submit" value="Save">
+            </form>
+
+            </main>
+         </div>
+</div>
+{% endblock %}

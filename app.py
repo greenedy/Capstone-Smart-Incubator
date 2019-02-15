@@ -13,7 +13,7 @@ def home():
         return render_template('login.html')
 
     else:
-        return "Welcome to Pincubator!"
+        dashboardLoad()
 
 
 @app.route('/login', methods=['POST'])
@@ -49,6 +49,53 @@ def dashboardLoad():
         'time': timeString
     }
     return render_template('dashboard.html', **templateData)
+
+@app.route("/configurations")
+def configurationsLoad():
+    # Connect to database
+    mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+    mycursor = mydb.cursor()
+
+    now = datetime.datetime.now()
+    timeString = now.strftime("%Y-%m-%d %H:%M")
+
+    mycursor.execute("SELECT * FROM configurations")
+
+    myresult = mycursor.fetchall();
+
+  #  for row in myresult:
+
+
+    templateData = {
+
+    }
+    return render_template('configurations.html', **templateData)
+
+@app.route("/settings")
+def settingsLoad():
+    # Connect to database
+    mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+    mycursor = mydb.cursor()
+
+    now = datetime.datetime.now()
+    timeString = now.strftime("%Y-%m-%d %H:%M")
+
+    #mycursor.execute("SELECT * FROM settings")
+
+    # myresult = mycursor.fetchall();
+
+    # for row in myresult:
+
+
+    templateData = {
+
+    }
+    return render_template('settings.html', **templateData)
+
+@app.route("/help")
+def helpLoad():
+
+    return render_template('help.html')
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
