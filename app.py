@@ -10,24 +10,43 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     if not session.get('logged_in'):
-        return render_template('login.html')
-
+        return redirect(url_for('login_load'))
     else:
-        return redirect(url_for('dashboardLoad'))
+        return redirect(url_for('dashboard_load'))
+
+
+@app.route('/login')
+def login_load():
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        return redirect(url_for('dashboard_load'))
+
 
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
-    if request.form['password'] == 'password' and request.form['username'] == 'username':
-        session['logged_in'] = True
-        return redirect(url_for('dashboardLoad'))
+    if request.method == 'POST':
+        if request.form['password'] == 'password' and request.form['username'] == 'username':
+            session['logged_in'] = True
+            return redirect(url_for('dashboard_load'))
+        else:
+            flash('wrong password!')
+
+
+@app.route('/logout')
+def do_admin_logout():
+    if session.get('logged_in'):
+        session['logged_in'] = False
+        return redirect(url_for('login_load'))
     else:
-        flash('wrong password!')
+        return redirect(url_for('login_load'))
+
 
 @app.route("/dashboard")
-def dashboardLoad():
+def dashboard_load():
     if not session.get('logged_in'):
-        return render_template('login.html')
+        return redirect(url_for('login_load'))
 
     else:
         # Connect to database
@@ -52,10 +71,11 @@ def dashboardLoad():
         }
         return render_template('dashboard.html', **templateData)
 
+
 @app.route("/configurations")
-def configurationsLoad():
+def configurations_load():
     if not session.get('logged_in'):
-        return render_template('login.html')
+        return redirect(url_for('login_load'))
 
     else:
         # Connect to database
@@ -77,10 +97,11 @@ def configurationsLoad():
         }
         return render_template('configurations.html', **templateData)
 
+
 @app.route("/settings")
-def settingsLoad():
+def settings_load():
     if not session.get('logged_in'):
-        return render_template('login.html')
+        return redirect(url_for('login_load'))
 
     else:
         # Connect to database
@@ -102,13 +123,15 @@ def settingsLoad():
         }
         return render_template('settings.html', **templateData)
 
+
 @app.route("/help")
-def helpLoad():
+def help_load():
     if not session.get('logged_in'):
-        return render_template('login.html')
+        return redirect(url_for('login_load'))
 
     else:
         return render_template('help.html')
+
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
