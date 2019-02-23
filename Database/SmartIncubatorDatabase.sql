@@ -52,19 +52,20 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `smartincubator`.`configurations`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `smartincubator`.`configurations` (
-  `id` INT(11) NOT NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id` INT(11) NULL,
   `name` VARCHAR(45) NOT NULL,
   `species` VARCHAR(45) NOT NULL,
   `temperature` VARCHAR(45) NOT NULL,
-  `humdity` VARCHAR(45) NOT NULL,
+  `humidity` VARCHAR(45) NOT NULL,
   `duration` VARCHAR(45) NOT NULL,
-  `notes` VARCHAR(45) NOT NULL,
-  `created_on` DATETIME NOT NULL,
+  `notes` VARCHAR(45) NULL,
+  `created_on` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE,
   CONSTRAINT `user_id`
-    FOREIGN KEY (`id`)
+    FOREIGN KEY (`user_id`)
     REFERENCES `smartincubator`.`users` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4

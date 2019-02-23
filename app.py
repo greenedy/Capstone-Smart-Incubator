@@ -72,31 +72,52 @@ def dashboard_load():
         return render_template('dashboard.html', **templateData)
 
 
-@app.route("/configurations")
-def configurations_load():
-    if not session.get('logged_in'):
-        return redirect(url_for('login_load'))
+# @app.route("/configurations")
+# def configurations_load():
+#     if not session.get('logged_in'):
+#         return redirect(url_for('login_load'))
+#
+#     else:
+#         # Connect to database
+#         mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+#         mycursor = mydb.cursor()
+#
+#         now = datetime.datetime.now()
+#         timeString = now.strftime("%Y-%m-%d %H:%M")
+#
+#         mycursor.execute("SELECT * FROM configurations")
+#         myresult = mycursor.fetchall();
+#       #  for row in myresult:
+#
+#         templateData = {
+#         }
+#         return render_template('configurations.html', **templateData)
 
-    else:
-        # Connect to database
+@app.route('/configurations', methods=['GET', 'POST'])
+def get_data():
+    if request.method == 'POST':
+        name = request.form['name']
+        species = request.form['species']
+        temperature = request.form['temperature']
+        humidity = request.form['humidity']
+        duration = request.form['duration']
+        notes = request.form['notes']
+
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
-        mycursor = mydb.cursor()
 
-        now = datetime.datetime.now()
-        timeString = now.strftime("%Y-%m-%d %H:%M")
+        cursor = mydb.cursor()
 
-        mycursor.execute("SELECT * FROM configurations")
+        # Retrieve config names from database
+        # cursor.execute("select name from configurations")
+        # configNames = cursor.fetchall()
 
-        myresult = mycursor.fetchall();
-
-      #  for row in myresult:
-
-
-        templateData = {
-
-        }
-        return render_template('configurations.html', **templateData)
-
+        query = "INSERT INTO configurations(name,species,temperature,humidity,duration,notes) VALUES(%s,%s,%s,%s,%s,%s)"
+        cursor.execute(query,(name,species,temperature,humidity,duration,notes))
+        mydb.commit()
+        cursor.close()
+        return render_template("configurations.html", configNames=configNames)
+    else:
+        return render_template("configurations.html")
 
 @app.route("/settings")
 def settings_load():

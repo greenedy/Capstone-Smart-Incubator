@@ -48,15 +48,22 @@
                             <div class="card mb-12 shadow-sm">
                                 <div class="card-header">
                                     <h4 class="my-0 font-weight-normal">Current Configuration</h4>
+                                     <!--populate from database-->
+                                     <select name ="configNames">
+                                      <option value="1">One</option>
+                                      <option value="2">Two</option>
+                                      <option value="3">Three</option>
+                                      <option value="4">Four</option>
+                                    </select>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <h6>Name: {{name}} </h6>
                                             <h6>Species: {{species}} </h6>
-                                            <h6>Temperature to maintain: {{temperature}}°C</h6>
-                                            <h6>Humidity to maintain: {{humidity}}%</h6>
-                                            <h6>Incubating duration: {{incubateTime}}</h6>
+                                            <h6>Temperature: {{temperature}}°C</h6>
+                                            <h6>Humidity: {{humidity}}%</h6>
+                                            <h6>Duration: {{incubateTime}}</h6>
                                         </div>
                                         <div class="col-sm-6">
                                              <h6>Notes: {{notes}} </h6>
@@ -97,7 +104,6 @@
                         <input type="duration" name="duration" placeholder="Duration">
                     </label>
                 </p>
-
                 <p>
                     <label>Notes:
                         <input type="notes" name="notes" placeholder="Notes">
@@ -105,7 +111,6 @@
                 </p>
                 <input type="submit" value="Save">
             </form>
-
             </main>
          </div>
 </div>
