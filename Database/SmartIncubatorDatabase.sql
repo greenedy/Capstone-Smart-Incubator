@@ -21,8 +21,8 @@ USE `smartincubator` ;
 -- Table `smartincubator`.`incubator`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `smartincubator`.`incubator` (
-  `humidity` FLOAT NULL DEFAULT NULL,
-  `temperature` FLOAT NULL DEFAULT NULL,
+  `humidity` FLOAT NULL DEFAULT 0,
+  `temperature` FLOAT NULL DEFAULT 0,
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
@@ -49,12 +49,16 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `smartincubator`.`presets`
+-- Table `smartincubator`.`configurations`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `smartincubator`.`presets` (
+CREATE TABLE IF NOT EXISTS `smartincubator`.`configurations` (
   `id` INT(11) NOT NULL,
   `name` VARCHAR(45) NOT NULL,
+  `species` VARCHAR(45) NOT NULL,
   `temperature` VARCHAR(45) NOT NULL,
+  `humdity` VARCHAR(45) NOT NULL,
+  `duration` VARCHAR(45) NOT NULL,
+  `notes` VARCHAR(45) NOT NULL,
   `created_on` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
