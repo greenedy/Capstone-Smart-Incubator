@@ -104,20 +104,18 @@ def get_data():
         notes = request.form['notes']
 
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
-
         cursor = mydb.cursor()
-
-        # Retrieve config names from database
-        # cursor.execute("select name from configurations")
-        # configNames = cursor.fetchall()
-
         query = "INSERT INTO configurations(name,species,temperature,humidity,duration,notes) VALUES(%s,%s,%s,%s,%s,%s)"
         cursor.execute(query,(name,species,temperature,humidity,duration,notes))
         mydb.commit()
         cursor.close()
-        return render_template("configurations.html", configNames=configNames)
-    else:
         return render_template("configurations.html")
+    else:
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+        cursor = mydb.cursor()
+        cursor.execute("SELECT Name from Configurations")
+        configNames = cursor.fetchall()
+        return render_template("configurations.html", configNames=configNames)
 
 @app.route("/settings")
 def settings_load():
