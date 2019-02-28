@@ -60,9 +60,14 @@ def dashboard_load():
 
         myresult = mycursor.fetchall();
 
-        for row in myresult:
-            humidity = row[0]
-            temperature = row[1]
+        if not myresult:
+            humidity = 0
+            temperature = 0
+
+        else:
+            for row in myresult:
+                humidity = row[0]
+                temperature = row[1]
 
         templateData = {
             'humidity': humidity,
