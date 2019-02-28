@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <title>Configurations</title>
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
     <link href="/static/css/style.css" rel="stylesheet" media="screen">
+
     <link rel="shortcut icon" href="/static/image/favicon.ico">
 </head>
 
@@ -76,9 +79,27 @@
                             </div>
                     </div>
 
-                <form action="/configurations" method="POST">
-                    <h3>New Configuration</h3>
-                    <p>
+
+
+                     <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                  Add
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content ">
+                      <div class="modal-header bg-primary">
+                        <h5 class="modal-title" id="exampleModalLongTitle">New Configuration</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                         <form action="/configurations" method="POST">
+                      <div class="modal-body bg-secondary">
+
+                                        <p>
                         <label>Name:
                             <input type="name" name="name" placeholder="Name">
                         </label>
@@ -108,8 +129,19 @@
                             <input type="notes" name="notes" placeholder="Notes">
                         </label>
                     </p>
-                    <input type="submit" value="Save">
-                </form>
+
+                      </div>
+                      <div class="modal-footer bg-secondary">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                      </div>
+                                </form>
+                    </div>
+                  </div>
+                </div>
+
+
+
                 </main>
              </div>
     </div>
