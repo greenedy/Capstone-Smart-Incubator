@@ -18,20 +18,6 @@ CREATE SCHEMA IF NOT EXISTS `smartincubator` DEFAULT CHARACTER SET utf8mb4 COLLA
 USE `smartincubator` ;
 
 -- -----------------------------------------------------
--- Table `smartincubator`.`incubator`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `smartincubator`.`incubator` (
-  `humidity` FLOAT NULL DEFAULT 0,
-  `temperature` FLOAT NULL DEFAULT 0,
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-AUTO_INCREMENT = 4
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
-
-
--- -----------------------------------------------------
 -- Table `smartincubator`.`users`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `smartincubator`.`users` (
@@ -53,20 +39,51 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `smartincubator`.`configurations` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `user_id` INT(11) NULL,
+  `user_id` INT(11) NULL DEFAULT NULL,
   `name` VARCHAR(45) NOT NULL,
   `species` VARCHAR(45) NOT NULL,
   `temperature` VARCHAR(45) NOT NULL,
   `humidity` VARCHAR(45) NOT NULL,
   `duration` VARCHAR(45) NOT NULL,
-  `notes` VARCHAR(45) NULL,
-  `created_on` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `notes` VARCHAR(45) NULL DEFAULT NULL,
+  `created_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `running` TINYINT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE,
+  INDEX `user_id` (`user_id` ASC) VISIBLE,
   CONSTRAINT `user_id`
     FOREIGN KEY (`user_id`)
     REFERENCES `smartincubator`.`users` (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `smartincubator`.`incubator`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `smartincubator`.`incubator` (
+  `humidity` FLOAT NULL DEFAULT '0',
+  `temperature` FLOAT NULL DEFAULT '0',
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 4
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `smartincubator`.`settings`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `smartincubator`.`settings` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `value` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
