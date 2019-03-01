@@ -50,24 +50,18 @@
                                 <div class="card mb-12 shadow-sm bg-dark">
                                     <div class="card-header">
                                         <h4 class="my-0 font-weight-normal">Current Configuration</h4>
-                                         <!--populate from database-->
-                                         <select name ="configNames">
-                                             {% for item in configNames %}
-                                                 <option>{{item[0]}}</option>
-                                              {% endfor %}
-                                        </select>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-sm-6">
-                                                <h6>Name: {{name}} </h6>
-                                                <h6>Species: {{species}} </h6>
-                                                <h6>Temperature: {{temperature}}°C</h6>
-                                                <h6>Humidity: {{humidity}}%</h6>
-                                                <h6>Duration: {{incubateTime}}</h6>
+                                                <h6>Name: </h6>
+                                                <h6>Species: </h6>
+                                                <h6>Temperature: °C</h6>
+                                                <h6>Humidity: %</h6>
+                                                <h6>Duration: </h6>
                                             </div>
                                             <div class="col-sm-6">
-                                                 <h6>Notes: {{notes}} </h6>
+                                                 <h6>Notes:  </h6>
                                             </div>
                                         </div>
                                     </div>
@@ -81,17 +75,14 @@
 
 
 
-                     <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-                  Add
-                </button>
 
-                <!-- Modal -->
-                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+
+                <!-- Add ConfigurationModal -->
+                <div class="modal fade" id="addConfigurationModal" tabindex="-1" role="dialog" aria-labelledby="addConfigurationModal" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content ">
                       <div class="modal-header bg-primary">
-                        <h5 class="modal-title" id="exampleModalLongTitle">New Configuration</h5>
+                        <h5 class="modal-title" id="addConfigurationModalTitle">New Configuration</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                         </button>
@@ -140,6 +131,97 @@
                   </div>
                 </div>
 
+
+
+                <div class="row pt-4">
+                    <h3 class=" pr-2">All Configurations</h3>        <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addConfigurationModal">
+                  Add
+                </button>
+                </div>
+                    <div class="table-responsive text-white pt-3">
+                        <table class="table table-striped table-sm text-white">
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                              <th>Species</th>
+                              <th>Options</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+
+                           {% for item in configs %}
+                            <tr>
+                              <td>{{item[2]}}</td>
+                              <td>{{item[3]}}</td>
+                              <td>
+                                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#">Run</button>
+                                  <button type="button" class="btn btn-info" data-toggle="modal" data-target="#editConfigurationModal">Edit</button>
+
+                                  <!-- Edit Configuration Modal -->
+                    <div class="modal fade" id="editConfigurationModal" tabindex="-1" role="dialog" aria-labelledby="editConfigurationModal" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content ">
+                      <div class="modal-header bg-primary">
+                        <h5 class="modal-title" id="editConfigurationModalTitle">Edit Configuration</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                         <form action="/configurations" method="POST">
+                      <div class="modal-body bg-secondary">
+
+                                        <p>
+                        <label>Name:
+                            <input type="name" name="name" value="{{item[2]}}">
+                        </label>
+                    </p>
+                    <p>
+                        <label>Species:
+                            <input type="species" name="species" value="{{item[3]}}">
+                        </label>
+                    </p>
+                    <p>
+                        <label>Temperature:
+                            <input type="temperature" name="temperature" value="{{item[4]}}">
+                        </label>
+                    </p>
+                    <p>
+                        <label>Humidity:
+                            <input type="humidity" name="humidity" value="{{item[5]}}">
+                        </label>
+                    </p>
+                    <p>
+                        <label>Duration:
+                            <input type="duration" name="duration" value="{{item[6]}}">
+                        </label>
+                    </p>
+                    <p>
+                        <label>Notes:
+                            <input type="notes" name="notes" value="{{item[7]}}">
+                        </label>
+                    </p>
+
+                      </div>
+                      <div class="modal-footer bg-secondary">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                      </div>
+                                </form>
+                    </div>
+                  </div>
+                </div>
+
+                                  <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#">Delete</button>
+                              </td>
+                            </tr>
+
+
+                           {% endfor %}
+
+                          </tbody>
+                        </table>
+                      </div>
 
 
                 </main>

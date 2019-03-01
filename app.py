@@ -23,7 +23,6 @@ def login_load():
         return redirect(url_for('dashboard_load'))
 
 
-
 @app.route('/login', methods=['POST'])
 def do_admin_login():
     if request.method == 'POST':
@@ -118,9 +117,18 @@ def get_data():
     else:
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
         cursor = mydb.cursor()
-        cursor.execute("SELECT Name from Configurations")
-        configNames = cursor.fetchall()
-        return render_template("configurations.html", configNames=configNames)
+        cursor.execute("SELECT * from Configurations")
+        configs = cursor.fetchall()
+        cursor.execute("SELECT * from Configurations where running = 1")
+        runningconfig = cursor.fetchall()
+
+        if not runningconfig:
+            humidity = 0
+            temperature = 0
+
+        else:
+            humdity=0
+        return render_template("configurations.html", configs=configs, runningConfig=runningconfig)
 
 @app.route("/settings")
 def settings_load():
