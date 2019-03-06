@@ -14,6 +14,11 @@
          -webkit-user-select: none;
          -ms-user-select: none;
          }
+         @media (min-width: 1200px) {
+            .container{
+               max-width: 85%;
+            }
+         }
       </style>
    </head>
    <body class="text-white bg-secondary">
@@ -52,8 +57,8 @@
                      <h4 class="my-0 font-weight-normal">Temperature</h4>
                   </div>
                   <div class="card-body">
-                     <h1 class="card-title">{{temperature}} °C</h1>
-                     <h4><small class="text-white">@ {{time}}</small></h4>
+                     <h1 class="card-title">{{temperatureData[temperatureData|length-1][1]}} °C</h1>
+                     <h4><small class="text-white">@ {{temperatureData[temperatureData|length-1][0]}}</small></h4>
                   </div>
                </div>
             </div>
@@ -63,8 +68,8 @@
                      <h4 class="my-0 font-weight-normal">Humidity</h4>
                   </div>
                   <div class="card-body">
-                     <h1 class="card-title">{{humidity}} %</h1>
-                     <h4><small class="text-white">@ {{time}}</small></h4>
+                     <h1 class="card-title">{{humidityData[humidityData|length-1][1]}} %</h1>
+                     <h4><small class="text-white">@ {{humidityData[humidityData|length-1][0]}}</small></h4>
                   </div>
                </div>
             </div>
@@ -79,32 +84,49 @@
                </div>
             </div>
          </div>
+         <div>
+
+         </div>
          <div style="width:100%;">
             <canvas id="canvas" ></canvas>
          </div>
          <br>
          <br>
-         <script>
+          <script>
             var config = {
             	type: 'line',
             	data: {
-            		labels: ['00:00','01:00', '02:00', '03:20', '04:00', '05:00', '06:00','07:00','08:00','09:00','10:00','11:00', '12:00','13:00','14:00','15:00','16:00','17:00','18:00','23:59'],
             		datasets: [{
-            			label: 'Temperature',
-            			yAxisID: 'Temperature',
-            			fontColor: '#fff',
-            			backgroundColor: 'rgb(255, 99, 132)',
-            			borderColor: 'rgb(255, 99, 132)',
-            			data: [],
-            			fill: false,
-            		}, {
-            			label: 'Humidity',
-            			yAxisID: 'Humidity',
-            			fill: false,
-            			backgroundColor: 'rgb(54, 162, 235)',
-            			borderColor: 'rgb(54, 162, 235)',
-            			data: [],
-            		}]
+                                 label: 'Temperature',
+                                 yAxisID: 'Temperature',
+                                 fontColor: '#fff',
+                                 backgroundColor: 'rgb(255, 99, 132)',
+                                 borderColor: 'rgb(255, 99, 132)',
+                                 data: [{% for item in temperatureData %}
+                                       {% if not loop.last%}
+                                           {x: '{{item[0]}}', y: {{item[1]}}},
+                                         {% else %}
+                                             {x: '{{item[0]}}', y: {{item[1]}} }
+                                        {% endif %}
+                                       {% endfor %}],
+
+                                 fill: false
+                               },
+                               {
+                                 label: 'Humidity',
+                                 yAxisID: 'Humidity',
+                                 fill: false,
+                                 backgroundColor: 'rgb(54, 162, 235)',
+                                 borderColor: 'rgb(54, 162, 235)',
+                                 data: [{% for item in humidityData %}
+                                       {% if not loop.last%}
+                                           {x: '{{item[0]}}', y: {{item[1]}}},
+                                         {% else %}
+                                             {x: '{{item[0]}}', y: {{item[1]}}}
+                                        {% endif %}
+                                       {% endfor %}],
+                                       fill: false
+            		             }]
             	},
             	options: {
             		responsive: true,
@@ -120,23 +142,21 @@
 
             		},
             		tooltips: {
-            			mode: 'index',
+            			mode: 'nearest',
             			intersect: false,
             		},
             		hover: {
             			mode: 'nearest',
-            			intersect: true
+            			intersect: false
             		},
             		scales: {
             			xAxes: [{
             			     type: 'time',
                                 time: {
-                                  format: "HH:mm",
                                   unit: 'hour',
                                   unitStepSize: 1,
                                   displayFormats: {
-                                    'minute': 'HH:mm',
-                                    'hour': 'HH:mm',
+                                    'second': 'HH:mm:ss a',
                                     min: '00:00',
                                     max: '23:59'
                                    }
@@ -164,11 +184,14 @@
                                       zeroLineColor: 'rgb(255, 255, 255)'
                                   },
                                   ticks: {
+                                       max: 100,
+                                       min: -50,
+                                       stepSize: 5,
                                        fontColor: "white",
                                   },
             				scaleLabel: {
             					display: true,
-            					labelString: 'Temperature',
+            					labelString: 'Temperature(°C)',
             					fontColor: 'rgb(255, 255, 255)',
 
             				}
@@ -182,11 +205,14 @@
                                       zeroLineColor: 'rgb(255, 255, 255)'
                                   },
                                   ticks: {
+                                       max: 100,
+                                       min: 0,
+                                       stepSize: 10,
                                        fontColor: "white",
                                   },
             				scaleLabel: {
             					display: true,
-            					labelString: 'Humidity',
+            					labelString: 'Humidity(%)',
             					fontColor: 'rgb(255, 255, 255)',
 
             				}
@@ -197,9 +223,10 @@
 
             window.onload = function() {
             	var ctx = document.getElementById('canvas').getContext('2d');
-            	window.myLine = new Chart(ctx, config);
-            };
 
+            	window.myLine = new Chart(ctx, config);
+
+            };
 
 
 

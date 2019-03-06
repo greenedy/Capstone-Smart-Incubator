@@ -3,6 +3,7 @@ from flask import Flask, flash, redirect, render_template, request, session, abo
 import mysql.connector
 import datetime
 import os
+import html
 
 app = Flask(__name__)
 
@@ -53,25 +54,33 @@ def dashboard_load():
         mycursor = mydb.cursor()
 
         now = datetime.datetime.now()
-        timeString = now.strftime("%Y-%m-%d %H:%M")
+        nowString = now.strftime("%Y-%m-%d %H:%M:%S")
+        print(nowString)
+        yesterday = datetime.datetime.now().replace(day=now.day - 1)
+        yesterdayString = yesterday.strftime("%Y-%m-%d %H:%M:%S")
+        print(yesterdayString)
 
-        mycursor.execute("SELECT * FROM incubator ORDER BY id DESC LIMIT 1")
+        #timeString = now.strftime("%Y-%m-%d %H:%M")
+
+        mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"'")
 
         myresult = mycursor.fetchall();
 
+        temperatureData = []
+        humidityData = []
+
         if not myresult:
-            humidity = 0
-            temperature = 0
+            temperatureData.append(["0000-00-00 00:00:00", "0.0"])
+            humidityData.append(["0000-00-00 00:00:00", "0.0"])
 
         else:
             for row in myresult:
-                humidity = row[0]
-                temperature = row[1]
+                temperatureData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"),str(row[1]).lstrip() ])
+                humidityData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"),str(row[0]).lstrip() ])
 
         templateData = {
-            'humidity': humidity,
-            'temperature': temperature,
-            'time': timeString
+            'temperatureData': temperatureData,
+            'humidityData': humidityData
         }
         return render_template('dashboard.html', **templateData)
 
