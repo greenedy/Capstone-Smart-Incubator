@@ -131,13 +131,13 @@ def get_data():
         cursor.execute("SELECT * from Configurations where running = 1")
         runningconfig = cursor.fetchall()
 
-        if not runningconfig:
-            humidity = 0
-            temperature = 0
+        #if not runningconfig:
+          #  runningconfig =[{"","","","","","","","","",""}]
 
-        else:
-            humdity=0
-        return render_template("configurations.html", configs=configs, runningConfig=runningconfig)
+        if not configs:
+            configs =[]
+
+        return render_template("configurations.html", configs=configs, runningconfig=runningconfig)
 
 @app.route("/settings")
 def settings_load():

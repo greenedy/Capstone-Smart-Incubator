@@ -55,14 +55,14 @@
                   <div class="card-body">
                      <div class="row">
                         <div class="col-sm-6">
-                           <h6>Name: </h6>
-                           <h6>Species: </h6>
-                           <h6>Temperature: °C</h6>
-                           <h6>Humidity: %</h6>
-                           <h6>Duration: </h6>
+                            <h6 class="my-0 font-weight-normal pb-1"><b>Name:</b> {{runningconfig[0][2]}}</h6>
+                           <h6 class="my-0 font-weight-normal pb-1"><b>Species:</b> {{runningconfig[0][3]}}</h6>
+                           <h6 class="my-0 font-weight-normal pb-1"><b>Temperature:</b> {{runningconfig[0][4]}}°C</h6>
+                           <h6 class="my-0 font-weight-normal pb-1"><b>Humidity:</b> {{runningconfig[0][5]}}%</h6>
+                           <h6 class="my-0 font-weight-normal pb-1"><b>Duration:</b> {{runningconfig[0][6]}}</h6>
                         </div>
                         <div class="col-sm-6">
-                           <h6>Notes:  </h6>
+                            <h6 class="my-0 font-weight-normal pb-1"><b>Notes:</b> {{runningconfig[0][7]}} </h6>
                         </div>
                      </div>
                   </div>
@@ -85,36 +85,33 @@
                   </div>
                   <form action="/configurations" method="POST">
                      <div class="modal-body bg-secondary">
-                        <p>
-                           <label>Name:
-                           <input type="name" name="name" placeholder="Name">
-                           </label>
-                        </p>
-                        <p>
-                           <label>Species:
-                           <input type="species" name="species" placeholder="Species">
-                           </label>
-                        </p>
-                        <p>
-                           <label>Temperature:
-                           <input type="temperature" name="temperature" placeholder="Temperature">
-                           </label>
-                        </p>
-                        <p>
-                           <label>Humidity:
-                           <input type="humidity" name="humidity" placeholder="Humidity">
-                           </label>
-                        </p>
-                        <p>
-                           <label>Duration:
-                           <input type="duration" name="duration" placeholder="Duration">
-                           </label>
-                        </p>
-                        <p>
-                           <label>Notes:
-                           <input type="notes" name="notes" placeholder="Notes">
-                           </label>
-                        </p>
+                         <div class="container">
+                        <table class="text-center">
+                            <tr>
+                                <td class="text-right pr-1 pb-3"><b>Name:</b></td>
+                                <td class="pb-3"><input type="name" class="form-control" name="name" required></td>
+                            </tr>
+                        <tr class="pb-1">
+                            <td class="text-right pr-1 pb-3"><b>Species:</b></td>
+                           <td class="pb-3"><input type="species" class="form-control" name="species" required></td>
+                        </tr>
+                        <tr class="pb-1">
+                            <td class="text-right pr-1 pb-3"><b>Temperature:</b></td>
+                           <td class="pb-3"><input type="temperature" class="form-control" name="temperature" required></td>
+                        </tr>
+                        <tr class="pb-1">
+                            <td class="text-right pr-1 pb-3"><b>Humidity:</b></td>
+                            <td class="pb-3"><input type="humidity" class="form-control" name="humidity" required></td>
+                        </tr>
+                        <tr class="pb-1">
+                            <td class="text-right pr-1 pb-3"><b>Duration:</b></td>
+                           <td class="pb-3"><input type="duration" class="form-control" name="duration" required></td>
+                        </tr>
+                        <tr class="pb-1">
+                            <td class="text-right pr-1 pb-3"><b>Notes:</b></td>
+                            <td class="pb-3"><textarea class="form-control" type="notes"  row="3" name="notes"></textarea></td>
+                        </table>
+                     </div>
                      </div>
                      <div class="modal-footer bg-secondary">
                         <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
@@ -124,6 +121,7 @@
                </div>
             </div>
          </div>
+          {% if configs %}
          {% for item in configs %}
          <!-- Edit Configuration Modal -->
          <div class="modal fade" id="editConfigurationModal{{item[2]}}" tabindex="-1" role="dialog" aria-labelledby="editConfigurationModal{{item[2]}}" aria-hidden="true">
@@ -137,36 +135,33 @@
                   </div>
                   <form action="/configurations" method="POST">
                      <div class="modal-body bg-secondary">
-                        <p>
-                           <label>Name:
-                           <input type="name" name="name" value="{{item[2]}}">
-                           </label>
-                        </p>
-                        <p>
-                           <label>Species:
-                           <input type="species" name="species" value="{{item[3]}}">
-                           </label>
-                        </p>
-                        <p>
-                           <label>Temperature:
-                           <input type="temperature" name="temperature" value="{{item[4]}}">
-                           </label>
-                        </p>
-                        <p>
-                           <label>Humidity:
-                           <input type="humidity" name="humidity" value="{{item[5]}}">
-                           </label>
-                        </p>
-                        <p>
-                           <label>Duration:
-                           <input type="duration" name="duration" value="{{item[6]}}">
-                           </label>
-                        </p>
-                        <p>
-                           <label>Notes:
-                           <input type="notes" name="notes" value="{{item[7]}}">
-                           </label>
-                        </p>
+                         <div class="container">
+                        <table class="text-center">
+                            <tr>
+                                <td class="text-right pr-1 pb-3"><b>Name:</b></td>
+                                <td class="pb-3"><input type="name" class="form-control" name="name" value="{{item[2]}}" required></td>
+                            </tr>
+                        <tr class="pb-1">
+                            <td class="text-right pr-1 pb-3"><b>Species:</b></td>
+                           <td class="pb-3"><input type="species" class="form-control" name="species" value="{{item[3]}}" required></td>
+                        </tr>
+                        <tr class="pb-1">
+                            <td class="text-right pr-1 pb-3"><b>Temperature:</b></td>
+                           <td class="pb-3"><input type="temperature" class="form-control" name="temperature" value="{{item[4]}}" required></td>
+                        </tr>
+                        <tr class="pb-1">
+                            <td class="text-right pr-1 pb-3"><b>Humidity:</b></td>
+                            <td class="pb-3"><input type="humidity" class="form-control" name="humidity" value="{{item[5]}}" required></td>
+                        </tr>
+                        <tr class="pb-1">
+                            <td class="text-right pr-1 pb-3"><b>Duration:</b></td>
+                           <td class="pb-3"><input type="duration" class="form-control" name="duration" value="{{item[6]}}" required></td>
+                        </tr>
+                        <tr class="pb-1">
+                            <td class="text-right pr-1 pb-3"><b>Notes:</b></td>
+                            <td class="pb-3"><textarea class="form-control" type="notes"  row="3" name="notes">{{item[7]}}</textarea></td>
+                        </table>
+                     </div>
                      </div>
                      <div class="modal-footer bg-secondary">
                         <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
@@ -177,6 +172,7 @@
             </div>
          </div>
          {% endfor %}
+          {% endif %}
          <div class="row pt-4">
             <h3 class=" pr-2">All Configurations</h3>
             <!-- Button trigger modal -->
