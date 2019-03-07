@@ -71,7 +71,22 @@ CREATE TABLE IF NOT EXISTS `smartincubator`.`incubator` (
   `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 4
+AUTO_INCREMENT = 10
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `smartincubator`.`notifications`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `smartincubator`.`notifications` (
+  `id` INT(11) NOT NULL,
+  `title` VARCHAR(45) NOT NULL,
+  `text` VARCHAR(45) NULL DEFAULT NULL,
+  `timestamp` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `dismissed` TINYINT(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -83,6 +98,7 @@ CREATE TABLE IF NOT EXISTS `smartincubator`.`settings` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `value` VARCHAR(45) NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
