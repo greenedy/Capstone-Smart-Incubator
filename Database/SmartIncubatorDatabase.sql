@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS `smartincubator`.`configurations` (
   `notes` VARCHAR(45) NULL DEFAULT NULL,
   `created_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `running` TINYINT(1) NOT NULL DEFAULT '0',
+  `startTime` DATETIME NULL DEFAULT NULL,
+  `selected` TINYINT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE,
@@ -56,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `smartincubator`.`configurations` (
     FOREIGN KEY (`user_id`)
     REFERENCES `smartincubator`.`users` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 5
+AUTO_INCREMENT = 6
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -71,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `smartincubator`.`incubator` (
   `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 10
+AUTO_INCREMENT = 15
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 

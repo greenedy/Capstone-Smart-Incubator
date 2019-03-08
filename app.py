@@ -55,14 +55,12 @@ def dashboard_load():
 
         now = datetime.datetime.now()
         nowString = now.strftime("%Y-%m-%d %H:%M:%S")
-        print(nowString)
         yesterday = datetime.datetime.now().replace(day=now.day - 1)
         yesterdayString = yesterday.strftime("%Y-%m-%d %H:%M:%S")
-        print(yesterdayString)
 
         #timeString = now.strftime("%Y-%m-%d %H:%M")
 
-        mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"'")
+        mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
 
         myresult = mycursor.fetchall();
 
@@ -106,38 +104,110 @@ def dashboard_load():
 #         }
 #         return render_template('configurations.html', **templateData)
 
-@app.route('/configurations', methods=['GET', 'POST'])
+@app.route('/configurations', methods=['GET', 'POST', 'PUT'])
 def get_data():
-    if request.method == 'POST':
-        name = request.form['name']
-        species = request.form['species']
-        temperature = request.form['temperature']
-        humidity = request.form['humidity']
-        duration = request.form['duration']
-        notes = request.form['notes']
+    if not session.get('logged_in'):
+        return redirect(url_for('login_load'))
 
-        mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
-        cursor = mydb.cursor()
-        query = "INSERT INTO configurations(name,species,temperature,humidity,duration,notes) VALUES(%s,%s,%s,%s,%s,%s)"
-        cursor.execute(query,(name,species,temperature,humidity,duration,notes))
-        mydb.commit()
-        cursor.close()
-        return render_template("configurations.html")
     else:
-        mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
-        cursor = mydb.cursor()
-        cursor.execute("SELECT * from Configurations")
-        configs = cursor.fetchall()
-        cursor.execute("SELECT * from Configurations where running = 1")
-        runningconfig = cursor.fetchall()
+        if request.method == 'POST':
+            if request.form['action'] == "Add":
+                name = request.form['name']
+                species = request.form['species']
+                temperature = request.form['temperature']
+                humidity = request.form['humidity']
+                duration = request.form['duration']
+                notes = request.form['notes']
 
-        #if not runningconfig:
-          #  runningconfig =[{"","","","","","","","","",""}]
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+                cursor = mydb.cursor()
+                query = "INSERT INTO configurations(name,species,temperature,humidity,duration,notes) VALUES(%s,%s,%s,%s,%s,%s)"
+                cursor.execute(query,(name,species,temperature,humidity,duration,notes))
+                mydb.commit()
+                cursor.close()
+                return redirect(url_for('get_data'))
+            elif request.form['action'] == "Edit":
+                name = request.form['name']
+                species = request.form['species']
+                temperature = request.form['temperature']
+                humidity = request.form['humidity']
+                duration = request.form['duration']
+                notes = request.form['notes']
+                configid = request.form['configId']
 
-        if not configs:
-            configs =[]
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+                cursor = mydb.cursor()
+                query = "UPDATE `configurations` SET `name` = '"+name+"'," \
+                                                    " `species` = '"+species+"'," \
+                                                    "`temperature` = "+temperature+"," \
+                                                    " `humidity` = "+humidity+"," \
+                                                    " `duration`= "+duration+"," \
+                                                    " `notes`='"+notes+"' WHERE `id` = "+configid
+                cursor.execute(query)
+                mydb.commit()
+                cursor.close()
+                return redirect(url_for('get_data'))
+            elif request.form['action'] == "Delete":
+                configid = request.form['configId']
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+                cursor = mydb.cursor()
+                query = "DELETE FROM `configurations` WHERE `id` = " + configid
+                cursor.execute(query)
+                mydb.commit()
+                cursor.close()
+                return redirect(url_for('get_data'))
+            elif request.form['action'] == "Select":
+                configid = request.form['configId']
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+                cursor = mydb.cursor(buffered=True)
+                cursor.execute("SELECT * from Configurations WHERE selected = 1")
+                if cursor.rowcount != 0:
+                    selectedconfig = cursor.fetchall()[0][0]
+                    query = "UPDATE `configurations` SET `selected` = '0',`running` = '0' WHERE `id` = " + str(selectedconfig)
+                    cursor.execute(query)
+                    mydb.commit()
+                cursor.execute("UPDATE `configurations` SET `selected` = '1' WHERE `id` = " + configid)
+                mydb.commit()
+                cursor.close()
+                return redirect(url_for('get_data'))
+            elif request.form['action'] == "Stop":
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+                cursor = mydb.cursor(buffered=True)
+                cursor.execute("SELECT * from Configurations WHERE running = 1")
+                if cursor.rowcount != 0:
+                    runningconfig = cursor.fetchall()[0][0]
+                    query = "UPDATE `configurations` SET `running` = '0' WHERE `id` = " + str(runningconfig)
+                    cursor.execute(query)
+                    mydb.commit()
+                cursor.close()
+                return redirect(url_for('get_data'))
+            elif request.form['action'] == "Run":
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+                cursor = mydb.cursor(buffered=True)
+                cursor.execute("SELECT * from Configurations WHERE selected = 1")
 
-        return render_template("configurations.html", configs=configs, runningconfig=runningconfig)
+                if cursor.rowcount != 0:
+                    selectedconfig = cursor.fetchall()[0][0]
+                    query = "UPDATE `configurations` SET `running` = '1' WHERE `id` = " + str(selectedconfig)
+                    cursor.execute(query)
+                    mydb.commit()
+                cursor.close()
+                return redirect(url_for('get_data'))
+        else:
+            mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+            cursor = mydb.cursor()
+            cursor.execute("SELECT * from Configurations")
+            configs = cursor.fetchall()
+            cursor.execute("SELECT * from Configurations WHERE selected = 1")
+            selectedconfig = cursor.fetchall()[0]
+
+            if not selectedconfig:
+                selectedconfig = ["","","","","","","","","",""]
+
+            if not configs:
+                configs =[]
+
+            return render_template("configurations.html", configs=configs, selectedconfig=selectedconfig)
 
 @app.route("/settings")
 def settings_load():

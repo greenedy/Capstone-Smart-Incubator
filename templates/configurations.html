@@ -50,29 +50,93 @@
             <div class="col-sm-12">
                <div class="card mb-12 shadow-sm bg-dark">
                   <div class="card-header">
-                     <h4 class="my-0 font-weight-normal">Current Configuration</h4>
+                     <h4 class="my-0 font-weight-normal">Selected Configuration</h4>
                   </div>
                   <div class="card-body">
                      <div class="row">
                         <div class="col-sm-6">
-                            <h6 class="my-0 font-weight-normal pb-1"><b>Name:</b> {{runningconfig[0][2]}}</h6>
-                           <h6 class="my-0 font-weight-normal pb-1"><b>Species:</b> {{runningconfig[0][3]}}</h6>
-                           <h6 class="my-0 font-weight-normal pb-1"><b>Temperature:</b> {{runningconfig[0][4]}}°C</h6>
-                           <h6 class="my-0 font-weight-normal pb-1"><b>Humidity:</b> {{runningconfig[0][5]}}%</h6>
-                           <h6 class="my-0 font-weight-normal pb-1"><b>Duration:</b> {{runningconfig[0][6]}}</h6>
+                            <h6 class="my-0 font-weight-normal pb-1"><b>Name:</b> {{selectedconfig[2]}}</h6>
+                           <h6 class="my-0 font-weight-normal pb-1"><b>Species:</b> {{selectedconfig[3]}}</h6>
+                           <h6 class="my-0 font-weight-normal pb-1"><b>Temperature:</b> {{selectedconfig[4]}}°C</h6>
+                           <h6 class="my-0 font-weight-normal pb-1"><b>Humidity:</b> {{selectedconfig[5]}}%</h6>
+                           <h6 class="my-0 font-weight-normal pb-1"><b>Duration:</b> {{selectedconfig[6]}}</h6>
                         </div>
                         <div class="col-sm-6">
-                            <h6 class="my-0 font-weight-normal pb-1"><b>Notes:</b> {{runningconfig[0][7]}} </h6>
+                            <h6 class="my-0 font-weight-normal pb-1"><b>Notes:</b> {{selectedconfig[7]}} </h6>
                         </div>
                      </div>
                   </div>
                   <div class="card-footer">
-                     <h6>Status: {{status}}</h6>
-                     <h6>Current runtime: {{runtime}}</h6>
+                     <div class="row">
+                     <div class="col-sm-6">
+                        <h6>Current runtime: {{runtime}}</h6>
+                     </div>
+                     <div class="col-sm-6 text-right ">
+                        {% if selectedconfig[9]== 0 %}
+                           <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#runConfigurationModal">Run</button>
+                        {% endif %}
+                       {% if selectedconfig[9]== 1 %}
+                           <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#stopConfigurationModal">Stop</button>
+                        {% endif %}
+                     </div>
+                     </div>
                   </div>
                </div>
             </div>
          </div>
+
+         <!-- Run modal(display confirm run if not running) -->
+         <div class="modal fade" id="runConfigurationModal" tabindex="-1" role="dialog" aria-labelledby="runConfigurationModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+               <div class="modal-content ">
+                  <div class="modal-header bg-primary">
+                     <h5 class="modal-title" id="runConfigurationModalTitle">Run Configuration</h5>
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <form action="/configurations" method="POST">
+                     <input type="hidden" name="action" value="Run">
+                     <div class="modal-body bg-secondary">
+                         <div class="container">
+                             <p>Run the selected configuration?</p>
+                        </div>
+                     </div>
+                     <div class="modal-footer bg-secondary">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Run</button>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+
+         <!-- Stop modal(display confirm run if not running and confirm stop if running) -->
+         <div class="modal fade" id="stopConfigurationModal" tabindex="-1" role="dialog" aria-labelledby="stopConfigurationModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+               <div class="modal-content ">
+                  <div class="modal-header bg-primary">
+                     <h5 class="modal-title" id="stopConfigurationModalTitle">Stop Configuration</h5>
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <form action="/configurations" method="POST">
+                     <input type="hidden" name="action" value="Stop">
+                     <div class="modal-body bg-secondary">
+                         <div class="container">
+                             <p>Are you sure you want to stop the current running configuration?</p>
+                        </div>
+                     </div>
+                     <div class="modal-footer bg-secondary">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Stop</button>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+
          <!-- Add ConfigurationModal -->
          <div class="modal fade" id="addConfigurationModal" tabindex="-1" role="dialog" aria-labelledby="addConfigurationModal" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -84,6 +148,7 @@
                      </button>
                   </div>
                   <form action="/configurations" method="POST">
+                     <input type="hidden" name="action" value="Add">
                      <div class="modal-body bg-secondary">
                          <div class="container">
                         <table class="text-center">
@@ -134,6 +199,8 @@
                      </button>
                   </div>
                   <form action="/configurations" method="POST">
+                     <input type="hidden" name="configId" value="{{item[0]}}">
+                     <input type="hidden" name="action" value="Edit">
                      <div class="modal-body bg-secondary">
                          <div class="container">
                         <table class="text-center">
@@ -172,25 +239,54 @@
             </div>
          </div>
 
-          <!-- Run modal(display confirm run if not running and confirm stop if running) -->
-         <div class="modal fade" id="runConfigurationModal{{item[2]}}" tabindex="-1" role="dialog" aria-labelledby="runConfigurationModal{{item[2]}}" aria-hidden="true">
+          <!-- Select modal(display confirm select if not selected and confirm stop current if running) -->
+         <div class="modal fade" id="selectConfigurationModal{{item[2]}}" tabindex="-1" role="dialog" aria-labelledby="selectConfigurationModal{{item[2]}}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                <div class="modal-content ">
                   <div class="modal-header bg-primary">
-                     <h5 class="modal-title" id="runConfigurationModalTitle">Run Configuration</h5>
+                     <h5 class="modal-title" id="selectConfigurationModalTitle">Select Configuration</h5>
                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                      <span aria-hidden="true">&times;</span>
                      </button>
                   </div>
-
+                  <form action="/configurations" method="POST">
+                     <input type="hidden" name="configId" value="{{item[0]}}">
+                     <input type="hidden" name="action" value="Select">
                      <div class="modal-body bg-secondary">
                          <div class="container">
-                             <p>Are you sure you want to stop the current running configuration and run {{item[2]}}?</p>
+                             <p>Are you sure you want to stop the current running configuration and select {{item[2]}}?</p>
                         </div>
                      </div>
                      <div class="modal-footer bg-secondary">
                         <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Run</button>
+                        <button type="submit" class="btn btn-primary">Select</button>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+
+         <!-- Delete modal(display confirm delete for configuration) -->
+         <div class="modal fade" id="deleteConfigurationModal{{item[2]}}" tabindex="-1" role="dialog" aria-labelledby="deleteConfigurationModal{{item[2]}}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+               <div class="modal-content ">
+                  <div class="modal-header bg-primary">
+                     <h5 class="modal-title" id="deleteConfigurationModalTitle">Delete Configuration</h5>
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <form action="/configurations" method="POST">
+                     <input type="hidden" name="configId" value="{{item[0]}}">
+                     <input type="hidden" name="action" value="Delete">
+                     <div class="modal-body bg-secondary">
+                         <div class="container">
+                             <p>Are you sure you want to delete the {{item[2]}} configuration?</p>
+                        </div>
+                     </div>
+                     <div class="modal-footer bg-secondary">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
                      </div>
                   </form>
                </div>
@@ -223,13 +319,14 @@
                      <td>{{item[3]}}</td>
 
                      <td>
-                         {% if item[9]==1 %}
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#" disabled>Running</button>
+                         {% if item[11]==1 %}
+                           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#" disabled>Selected</button>
                          {% else %}
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#runConfigurationModal{{item[2]}}">Run</button>
+                           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#selectConfigurationModal{{item[2]}}">Select</button>
+                           <button type="button" class="btn btn-info" data-toggle="modal" data-target="#editConfigurationModal{{item[2]}}">Edit</button>
+                           <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteConfigurationModal{{item[2]}}">Delete</button>
                          {% endif %}
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#editConfigurationModal{{item[2]}}">Edit</button>
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#">Delete</button>
+
                      </td>
                   </tr>
                   {% endfor %}
