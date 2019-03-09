@@ -195,17 +195,18 @@ def get_data():
                 return redirect(url_for('get_data'))
         else:
             mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
-            cursor = mydb.cursor()
+            cursor = mydb.cursor(buffered=True)
             cursor.execute("SELECT * from Configurations")
             configs = cursor.fetchall()
             cursor.execute("SELECT * from Configurations WHERE selected = 1")
-            selectedconfig = cursor.fetchall()[0]
+            if cursor.rowcount != 0:
+                selectedconfig = cursor.fetchall()[0]
 
-            if not selectedconfig:
+            else:
                 selectedconfig = ["","","","","","","","","",""]
 
             if not configs:
-                configs =[]
+                 configs =[]
 
             return render_template("configurations.html", configs=configs, selectedconfig=selectedconfig)
 

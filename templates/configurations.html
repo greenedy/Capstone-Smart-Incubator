@@ -189,7 +189,7 @@
           {% if configs %}
          {% for item in configs %}
          <!-- Edit Configuration Modal -->
-         <div class="modal fade" id="editConfigurationModal{{item[2]}}" tabindex="-1" role="dialog" aria-labelledby="editConfigurationModal{{item[2]}}" aria-hidden="true">
+         <div class="modal fade" id="editConfigurationModal{{item[2]|replace(' ', '-')}}" tabindex="-1" role="dialog" aria-labelledby="editConfigurationModal{{item[2]|replace(' ', '-')}}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                <div class="modal-content ">
                   <div class="modal-header bg-primary">
@@ -240,7 +240,7 @@
          </div>
 
           <!-- Select modal(display confirm select if not selected and confirm stop current if running) -->
-         <div class="modal fade" id="selectConfigurationModal{{item[2]}}" tabindex="-1" role="dialog" aria-labelledby="selectConfigurationModal{{item[2]}}" aria-hidden="true">
+         <div class="modal fade" id="selectConfigurationModal{{item[2]|replace(' ', '-')}}" tabindex="-1" role="dialog" aria-labelledby="selectConfigurationModal{{item[2]|replace(' ', '-')}}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                <div class="modal-content ">
                   <div class="modal-header bg-primary">
@@ -267,7 +267,7 @@
          </div>
 
          <!-- Delete modal(display confirm delete for configuration) -->
-         <div class="modal fade" id="deleteConfigurationModal{{item[2]}}" tabindex="-1" role="dialog" aria-labelledby="deleteConfigurationModal{{item[2]}}" aria-hidden="true">
+         <div class="modal fade" id="deleteConfigurationModal{{item[2]|replace(' ', '-')}}" tabindex="-1" role="dialog" aria-labelledby="deleteConfigurationModal{{item[2]|replace(' ', '-')}}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                <div class="modal-content ">
                   <div class="modal-header bg-primary">
@@ -322,9 +322,9 @@
                          {% if item[11]==1 %}
                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#" disabled>Selected</button>
                          {% else %}
-                           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#selectConfigurationModal{{item[2]}}">Select</button>
-                           <button type="button" class="btn btn-info" data-toggle="modal" data-target="#editConfigurationModal{{item[2]}}">Edit</button>
-                           <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteConfigurationModal{{item[2]}}">Delete</button>
+                           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#selectConfigurationModal{{item[2]|replace(' ', '-')}}">Select</button>
+                           <button type="button" class="btn btn-info" data-toggle="modal" data-target="#editConfigurationModal{{item[2]|replace(' ', '-')}}">Edit</button>
+                           <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteConfigurationModal{{item[2]|replace(' ', '-')}}">Delete</button>
                          {% endif %}
 
                      </td>
