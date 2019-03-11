@@ -15,11 +15,45 @@ def home():
     else:
         return redirect(url_for('dashboard_load'))
 
+@app.route('/register')
+def register_load():
+    if not session.get('logged_in'):
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+        cursor = mydb.cursor(buffered=True)
+        cursor.execute("SELECT * from users")
+        if cursor.rowcount != 0:
+            return redirect(url_for('login_load'))
+        else:
+            return render_template('register.html')
+    else:
+        return redirect(url_for('dashboard_load'))
+
+
+@app.route('/register', methods=['POST'])
+def do_register():
+    if request.method == 'POST':
+
+        username = request.form['username']
+        password = request.form['password']
+
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+        cursor = mydb.cursor()
+        query = "INSERT INTO users(username,password) VALUES(%s,%s)"
+        cursor.execute(query, (username, password))
+        mydb.commit()
+        cursor.close()
+        return redirect(url_for('login_load'))
 
 @app.route('/login')
 def login_load():
     if not session.get('logged_in'):
-        return render_template('login.html')
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+        cursor = mydb.cursor(buffered=True)
+        cursor.execute("SELECT * from users")
+        if cursor.rowcount != 0:
+            return render_template('login.html')
+        else:
+            return redirect(url_for('register_load'))
     else:
         return redirect(url_for('dashboard_load'))
 
@@ -27,11 +61,19 @@ def login_load():
 @app.route('/login', methods=['POST'])
 def do_admin_login():
     if request.method == 'POST':
-        if request.form['password'] == 'password' and request.form['username'] == 'username':
-            session['logged_in'] = True
-            return redirect(url_for('dashboard_load'))
+
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+        cursor = mydb.cursor(buffered=True)
+        cursor.execute("SELECT * from users")
+        if cursor.rowcount != 0:
+            myresult = cursor.fetchall()[0];
+            if request.form['password'] == myresult[1] and request.form['username'] == myresult[2]:
+                session['logged_in'] = True
+                return redirect(url_for('dashboard_load'))
+            else:
+                flash('wrong password!')
         else:
-            flash('wrong password!')
+            return redirect(url_for('register_load'))
 
 
 @app.route('/logout')
@@ -58,8 +100,6 @@ def dashboard_load():
         yesterday = datetime.datetime.now().replace(day=now.day - 1)
         yesterdayString = yesterday.strftime("%Y-%m-%d %H:%M:%S")
 
-        #timeString = now.strftime("%Y-%m-%d %H:%M")
-
         mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
 
         myresult = mycursor.fetchall();
@@ -83,28 +123,9 @@ def dashboard_load():
         return render_template('dashboard.html', **templateData)
 
 
-# @app.route("/configurations")
-# def configurations_load():
-#     if not session.get('logged_in'):
-#         return redirect(url_for('login_load'))
 #
-#     else:
-#         # Connect to database
-#         mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
-#         mycursor = mydb.cursor()
-#
-#         now = datetime.datetime.now()
-#         timeString = now.strftime("%Y-%m-%d %H:%M")
-#
-#         mycursor.execute("SELECT * FROM configurations")
-#         myresult = mycursor.fetchall();
-#       #  for row in myresult:
-#
-#         templateData = {
-#         }
-#         return render_template('configurations.html', **templateData)
 
-@app.route('/configurations', methods=['GET', 'POST', 'PUT'])
+@app.route('/configurations', methods=['GET', 'POST'])
 def get_data():
     if not session.get('logged_in'):
         return redirect(url_for('login_load'))
