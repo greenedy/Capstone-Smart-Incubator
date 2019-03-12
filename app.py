@@ -7,7 +7,7 @@ import html
 
 app = Flask(__name__)
 
-
+#if url is emoty then it redirects to the login
 @app.route('/')
 def home():
     if not session.get('logged_in'):
@@ -15,6 +15,7 @@ def home():
     else:
         return redirect(url_for('dashboard_load'))
 
+#The register url loads the register html page
 @app.route('/register')
 def register_load():
     if not session.get('logged_in'):
@@ -102,7 +103,11 @@ def dashboard_load():
 
         mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
 
-        myresult = mycursor.fetchall();
+        myresult = mycursor.fetchall()
+
+        mycursor.execute("SELECT * FROM notifications WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
+
+        notifications = mycursor.fetchall()
 
         temperatureData = []
         humidityData = []
@@ -120,7 +125,7 @@ def dashboard_load():
             'temperatureData': temperatureData,
             'humidityData': humidityData
         }
-        return render_template('dashboard.html', **templateData)
+        return render_template('dashboard.html', **templateData, notifications=notifications)
 
 
 #

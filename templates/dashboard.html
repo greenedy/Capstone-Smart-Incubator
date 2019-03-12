@@ -79,7 +79,21 @@
                      <h4 class="my-0 font-weight-normal">Notifications</h4>
                   </div>
                   <div class="card-body">
-                     <h1 class="card-title "> </h1>
+                     <div class="list-group">
+                        {% for item in notifications %}
+                           {% if item[4]== 0 %}
+                              {% if item[5]== 'error' %}
+                                 <a href="#" class="list-group-item list-group-item-action list-group-item-danger"><div class="float-left">{{item[2]}}</div><div class="float-right"><small>{{item[3]}}</small></div></a>
+                              {% elif item[5]== 'warning' %}
+                                 <a href="#" class="list-group-item list-group-item-action list-group-item-warning"><div class="float-left">{{item[2]}}</div><div class="float-right"><small>{{item[3]}}</small></div></a>
+                              {% elif item[5]== "success" %}
+                                 <a href="#" class="list-group-item list-group-item-action list-group-item-success"><div class="float-left">{{item[2]}}</div><div class="float-right"><small>{{item[3]}}</small></div></a>
+                              {% else %}
+                                 <a href="#" class="list-group-item list-group-item-action list-group-item-dark"><div class="float-left">{{item[2]}}</div><div class="float-right"><small>{{item[3]}}</small></div></a>
+                              {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                     </div>
                   </div>
                </div>
             </div>

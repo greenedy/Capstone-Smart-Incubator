@@ -18,28 +18,10 @@ CREATE SCHEMA IF NOT EXISTS `smartincubator` DEFAULT CHARACTER SET utf8mb4 COLLA
 USE `smartincubator` ;
 
 -- -----------------------------------------------------
--- Table `smartincubator`.`users`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `smartincubator`.`users` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(45) NOT NULL,
-  `password` VARCHAR(45) NOT NULL,
-  `created_on` DATETIME NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
-  UNIQUE INDEX `password_UNIQUE` (`password` ASC) VISIBLE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
-
-
--- -----------------------------------------------------
 -- Table `smartincubator`.`configurations`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `smartincubator`.`configurations` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `user_id` INT(11) NULL DEFAULT NULL,
   `name` VARCHAR(45) NOT NULL,
   `species` VARCHAR(45) NOT NULL,
   `temperature` VARCHAR(45) NOT NULL,
@@ -52,13 +34,8 @@ CREATE TABLE IF NOT EXISTS `smartincubator`.`configurations` (
   `selected` TINYINT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE,
-  INDEX `user_id` (`user_id` ASC) VISIBLE,
-  CONSTRAINT `user_id`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `smartincubator`.`users` (`id`))
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 6
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -73,7 +50,6 @@ CREATE TABLE IF NOT EXISTS `smartincubator`.`incubator` (
   `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 15
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -82,11 +58,12 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `smartincubator`.`notifications`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `smartincubator`.`notifications` (
-  `id` INT(11) NOT NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(45) NOT NULL,
   `text` VARCHAR(45) NULL DEFAULT NULL,
   `timestamp` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   `dismissed` TINYINT(1) NOT NULL DEFAULT '0',
+  `type` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
@@ -103,6 +80,24 @@ CREATE TABLE IF NOT EXISTS `smartincubator`.`settings` (
   `type` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `smartincubator`.`users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `smartincubator`.`users` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  `created_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+  UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
+  UNIQUE INDEX `password_UNIQUE` (`password` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
