@@ -16,6 +16,7 @@ def home():
         return redirect(url_for('dashboard_load'))
 
 #The register url loads the register html page
+#Add variable for user and pass for pi switch
 @app.route('/register')
 def register_load():
     if not session.get('logged_in'):
@@ -186,7 +187,7 @@ def get_data():
                 configid = request.form['configId']
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
                 cursor = mydb.cursor(buffered=True)
-                cursor.execute("SELECT * from Configurations WHERE selected = 1")
+                cursor.execute("SELECT * from configurations WHERE selected = 1")
                 if cursor.rowcount != 0:
                     selectedconfig = cursor.fetchall()[0][0]
                     query = "UPDATE `configurations` SET `selected` = '0',`running` = '0' WHERE `id` = " + str(selectedconfig)
@@ -199,7 +200,7 @@ def get_data():
             elif request.form['action'] == "Stop":
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
                 cursor = mydb.cursor(buffered=True)
-                cursor.execute("SELECT * from Configurations WHERE running = 1")
+                cursor.execute("SELECT * from configurations WHERE running = 1")
                 if cursor.rowcount != 0:
                     runningconfig = cursor.fetchall()[0][0]
                     query = "UPDATE `configurations` SET `running` = '0' WHERE `id` = " + str(runningconfig)
@@ -210,7 +211,7 @@ def get_data():
             elif request.form['action'] == "Run":
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
                 cursor = mydb.cursor(buffered=True)
-                cursor.execute("SELECT * from Configurations WHERE selected = 1")
+                cursor.execute("SELECT * from configurations WHERE selected = 1")
 
                 if cursor.rowcount != 0:
                     selectedconfig = cursor.fetchall()[0][0]
@@ -222,9 +223,9 @@ def get_data():
         else:
             mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
             cursor = mydb.cursor(buffered=True)
-            cursor.execute("SELECT * from Configurations")
+            cursor.execute("SELECT * from configurations")
             configs = cursor.fetchall()
-            cursor.execute("SELECT * from Configurations WHERE selected = 1")
+            cursor.execute("SELECT * from configurations WHERE selected = 1")
             if cursor.rowcount != 0:
                 selectedconfig = cursor.fetchall()[0]
 
@@ -273,4 +274,6 @@ def help_load():
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
-app.run(debug=True, host='127.0.0.1', port=8080)
+    app.run(debug=True, host='127.0.0.1', port=8080)
+    #app.secret_key = 'capstone'
+    #app.run(host='0.0.0.0', port=80)
