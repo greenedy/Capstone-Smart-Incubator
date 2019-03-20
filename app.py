@@ -69,7 +69,7 @@ def do_admin_login():
         cursor.execute("SELECT * from users")
         if cursor.rowcount != 0:
             myresult = cursor.fetchall()[0];
-            if request.form['password'] == myresult[1] and request.form['username'] == myresult[2]:
+            if request.form['username'] == myresult[1] and request.form['password'] == myresult[2]:
                 session['logged_in'] = True
                 return redirect(url_for('dashboard_load'))
             else:
