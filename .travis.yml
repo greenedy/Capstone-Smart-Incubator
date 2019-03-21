@@ -5,4 +5,4 @@ cache: pip
 install:
 
 script:
-  - python tests.py
+  - python test_get_data.py
