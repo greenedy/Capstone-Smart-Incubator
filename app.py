@@ -71,6 +71,7 @@ def do_admin_login():
             myresult = cursor.fetchall()[0];
             if request.form['username'] == myresult[1] and request.form['password'] == myresult[2]:
                 session['logged_in'] = True
+                session['username'] = myresult[1]
                 return redirect(url_for('dashboard_load'))
             else:
                 flash('wrong password!')
@@ -82,6 +83,7 @@ def do_admin_login():
 def do_admin_logout():
     if session.get('logged_in'):
         session['logged_in'] = False
+        session['username'] = None
         return redirect(url_for('login_load'))
     else:
         return redirect(url_for('login_load'))

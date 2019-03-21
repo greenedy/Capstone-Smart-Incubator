@@ -38,6 +38,10 @@
                   <a class="nav-link active" href="help">Help</a>
                </li>
             </ul>
+            <ul id="logout_sidebar_button" class="nav nav-sidebar ">
+               <li class="text-center"><p>User:{{session['username']}}</p></li>
+               <li><a href="/logout"><button type="button" class="btn btn-primary btn-block" data-target="#" >Logout</button></a></li>
+            </ul>
          </div>
       </nav>
       <div class="container">
