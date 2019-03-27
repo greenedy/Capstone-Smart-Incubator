@@ -1,8 +1,10 @@
 
 from flask import Flask, flash, redirect, render_template, request, session, abort, url_for
+from scripts.database import database
 import mysql.connector
 import datetime
 import os
+
 import html
 
 app = Flask(__name__)
