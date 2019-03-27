@@ -1,66 +1,53 @@
-import mysql.connector
-import Adafruit_DHT
-import os
-import sys
-import time
-import RPi.GPIO as GPIO
+from scripts.database import database
+import  time
 
-# Setup the relay connection
-GPIO.setmode(GPIO.BCM)
-PWR = 26
-GPIO.setwarnings(False)
-GPIO.setup(PWR,GPIO.OUT)
 
-# Type of sensor
-DHT_TYPE = Adafruit_DHT.AM2302
+class incubator():
 
-# Example of sensor connected to Raspberry Pi pin 23
-DHT_PIN  = 4
+    def __init__(self):
+        self.configuration = configuration()
+        self.run = False
+        self.db = database()
 
-# Connect to database
-mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
-
-mycursor = mydb.cursor()
-
-# How long to wait (in seconds) between measurements.
-FREQUENCY_SECONDS = 3
-
-# Set the power state of the relay
-RELAY_POWER = 'OFF'
-
-while True:
-
-    # Attempt to get sensor reading.
-    humidity, temperature = Adafruit_DHT.read(DHT_TYPE, DHT_PIN)
-
-    # Skip to the next reading if a valid measurement couldn't be taken.
-    # This might happen if the CPU is under a lot of load and the sensor
-    # can't be reliably read (timing is critical to read the sensor).
-    if humidity is None or temperature is None:
-        time.sleep(2)
-        continue
-
-    if (temperature > 38.0):
-        GPIO.output(PWR, False)
-        RELAY_POWER = 'OFF'
-    elif (temperature < 37.0):
-        GPIO.output(PWR, True)
-        RELAY_POWER = 'ON'
-
-    print("Smart Incubator")
-    try:
-
+    def addTemperatureHumidityToDatabase(self, temperature, humidity):
         sql = "INSERT INTO incubator (humidity, temperature) VALUES (%s, %s)"
         val = (humidity, temperature)
-        mycursor.execute(sql, val)
+        self.db.query(sql, val)
 
-        mydb.commit()
+    def addNotificationToDatabase(self, text):
+        sql = "INSERT INTO notifications (title, text, type) VALUES (%s, %s)"
+        val = (text, text, "Error")
+        self.db.query(sql, val)
 
-        print(mycursor.rowcount, "record inserted.")
+    def startConfig(self):
+        self.configuration.startRunning()
 
-    except:
-        time.sleep(FREQUENCY_SECONDS)
-        continue
+    def stopConfig(self):
+        self.configuration.stopRunning()
 
-    # Wait before continuing
-    time.sleep(FREQUENCY_SECONDS)
+    def setConfiguration(self, temperature, humidity, frequency, duration):
+        self.configuration.setTemperature(temperature)
+        self.configuration.setHumidity(humidity)
+        self.configuration.setFrequency(frequency)
+        self.configuration.setDuration(duration)
+
+
+class configuration():
+
+    def setTemperature(self, temperature):
+        self.temperature = temperature
+
+    def setHumidity(self, humidity):
+        self.humidity = humidity
+
+    def setFrequency(self, frequency):
+        self.frequency = frequency
+
+    def setDuration(self, duration):
+        self.duration = duration
+
+    def startRunning(self):
+        self.run = True
+
+    def stopRunning(self):
+        self.run = False
