@@ -89,46 +89,81 @@ def do_admin_logout():
         return redirect(url_for('login_load'))
 
 
-@app.route("/dashboard")
+@app.route("/dashboard", methods=['GET', 'POST'])
 def dashboard_load():
     if not session.get('logged_in'):
         return redirect(url_for('login_load'))
 
     else:
-        # Connect to database
-        mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
-        mycursor = mydb.cursor()
+        print("Hi")
+        if request.method == 'POST':
+            print("Hello")
+            if request.form['action'] == "Stop":
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+                cursor = mydb.cursor(buffered=True)
+                cursor.execute("SELECT * from configurations WHERE running = 1")
+                if cursor.rowcount != 0:
+                    runningconfig = cursor.fetchall()[0][0]
+                    query = "UPDATE `configurations` SET `running` = '0' WHERE `id` = " + str(runningconfig)
+                    cursor.execute(query)
+                    mydb.commit()
+                cursor.close()
+                return redirect(url_for('dashboard_load'))
+            elif request.form['action'] == "Run":
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+                cursor = mydb.cursor(buffered=True)
+                cursor.execute("SELECT * from configurations WHERE selected = 1")
 
-        now = datetime.datetime.now()
-        nowString = now.strftime("%Y-%m-%d %H:%M:%S")
-        yesterday = datetime.datetime.now().replace(day=now.day - 1)
-        yesterdayString = yesterday.strftime("%Y-%m-%d %H:%M:%S")
-
-        mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
-
-        myresult = mycursor.fetchall()
-
-        mycursor.execute("SELECT * FROM notifications WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
-
-        notifications = mycursor.fetchall()
-
-        temperatureData = []
-        humidityData = []
-
-        if not myresult:
-            temperatureData.append(["0000-00-00 00:00:00", "0.0"])
-            humidityData.append(["0000-00-00 00:00:00", "0.0"])
-
+                if cursor.rowcount != 0:
+                    selectedconfig = cursor.fetchall()[0][0]
+                    query = "UPDATE `configurations` SET `running` = '1' WHERE `id` = " + str(selectedconfig)
+                    cursor.execute(query)
+                    mydb.commit()
+                cursor.close()
+                return redirect(url_for('dashboard_load'))
         else:
-            for row in myresult:
-                temperatureData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"),str(row[1]).lstrip() ])
-                humidityData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"),str(row[0]).lstrip() ])
 
-        templateData = {
-            'temperatureData': temperatureData,
-            'humidityData': humidityData
-        }
-        return render_template('dashboard.html', **templateData, notifications=notifications)
+            # Connect to database
+            mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+            mycursor = mydb.cursor()
+
+            now = datetime.datetime.now()
+            nowString = now.strftime("%Y-%m-%d %H:%M:%S")
+            yesterday = datetime.datetime.now().replace(day=now.day - 1)
+            yesterdayString = yesterday.strftime("%Y-%m-%d %H:%M:%S")
+
+            mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
+
+            myresult = mycursor.fetchall()
+
+            mycursor.execute("SELECT * FROM notifications WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
+
+            notifications = mycursor.fetchall()
+
+            mycursor.execute("SELECT * from configurations WHERE selected = 1")
+            if mycursor.rowcount != 0:
+                selectedconfig = mycursor.fetchall()[0]
+
+            else:
+                selectedconfig = ["", "", "", "", "", "", "", "", "", ""]
+
+            temperatureData = []
+            humidityData = []
+
+            if not myresult:
+                temperatureData.append(["0000-00-00 00:00:00", "0.0"])
+                humidityData.append(["0000-00-00 00:00:00", "0.0"])
+
+            else:
+                for row in myresult:
+                    temperatureData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"),str(row[1]).lstrip() ])
+                    humidityData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"),str(row[0]).lstrip() ])
+
+            templateData = {
+                'temperatureData': temperatureData,
+                'humidityData': humidityData
+            }
+            return render_template('dashboard.html', **templateData, notifications=notifications, selectedconfig=selectedconfig)
 
 
 #
