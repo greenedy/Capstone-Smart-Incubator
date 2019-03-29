@@ -1,5 +1,6 @@
 
 from flask import Flask, flash, redirect, render_template, request, session, abort, url_for
+from passlib.hash import sha256_crypt
 import mysql.connector
 import datetime
 import os
@@ -36,7 +37,7 @@ def do_register():
     if request.method == 'POST':
 
         username = request.form['username']
-        password = request.form['password']
+        password = sha256_crypt.hash(request.form['password'])
 
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
         cursor = mydb.cursor()
@@ -69,7 +70,7 @@ def do_admin_login():
         cursor.execute("SELECT * from users")
         if cursor.rowcount != 0:
             myresult = cursor.fetchall()[0];
-            if request.form['username'] == myresult[1] and request.form['password'] == myresult[2]:
+            if request.form['username'] == myresult[1] and sha256_crypt.verify(request.form['password'],myresult[2]):
                 session['logged_in'] = True
                 session['username'] = myresult[1]
                 return redirect(url_for('dashboard_load'))
