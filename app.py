@@ -74,7 +74,7 @@ def do_admin_login():
                 session['username'] = myresult[1]
                 return redirect(url_for('dashboard_load'))
             else:
-                flash('wrong password!')
+                return render_template('login.html', error="Incorrect Username or Password")
         else:
             return redirect(url_for('register_load'))
 
