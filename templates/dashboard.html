@@ -70,7 +70,7 @@
                                   Not Running
                               {% endif %}
                               {% if selectedconfig[8]== 1 %}
-                                  Running
+                                Running
                               {% endif %}
 
                               {% if selectedconfig[8]== 0 %}
@@ -78,6 +78,7 @@
                               {% endif %}
                               {% if selectedconfig[8]== 1 %}
                                   <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#stopConfigurationModal">Stop</button>
+                                  <h6><b>Runtime: </b>{{runtime}}</h6>
                               {% endif %}
                             </h5>
                </div>

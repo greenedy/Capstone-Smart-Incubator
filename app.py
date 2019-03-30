@@ -115,7 +115,7 @@ def dashboard_load():
 
                 if cursor.rowcount != 0:
                     selectedconfig = cursor.fetchall()[0][0]
-                    query = "UPDATE `configurations` SET `running` = '1' WHERE `id` = " + str(selectedconfig)
+                    query = "UPDATE `configurations` SET `running` = '1', `startTime` = NOW() WHERE `id` = " + str(selectedconfig)
                     cursor.execute(query)
                     mydb.commit()
                 cursor.close()
@@ -151,9 +151,20 @@ def dashboard_load():
             mycursor.execute("SELECT * from configurations WHERE selected = 1")
             if mycursor.rowcount != 0:
                 selectedconfig = mycursor.fetchall()[0]
+                now = datetime.datetime.now()
+                starttime = selectedconfig[9]
+                duration_in_s = (now - starttime).total_seconds()
+
+                days = divmod(duration_in_s, 86400)  # Get days
+                hours = divmod(days[1], 3600)  # Use remainder of days to calc hours
+                minutes = divmod(hours[1], 60)  # Use remainder of hours to calc minutes
+                seconds = divmod(minutes[1], 1)  # Use remainder of minutes to calc seconds
+
+                runtimestring = "%d days, %d hours, %d minutes and %d seconds" % (days[0], hours[0], minutes[0], seconds[0])
 
             else:
                 selectedconfig = ["", "", "", "", "", "", "", "", "", ""]
+                runtimestring = ""
 
             temperatureData = []
             humidityData = []
@@ -171,7 +182,7 @@ def dashboard_load():
                 'temperatureData': temperatureData,
                 'humidityData': humidityData
             }
-            return render_template('dashboard.html', **templateData, notifications=notifications, selectedconfig=selectedconfig)
+            return render_template('dashboard.html', **templateData, notifications=notifications, selectedconfig=selectedconfig, runtime=runtimestring)
 
 
 #
@@ -274,13 +285,28 @@ def get_data():
             if cursor.rowcount != 0:
                 selectedconfig = cursor.fetchall()[0]
 
+                if selectedconfig[8] == 1:
+                    now = datetime.datetime.now()
+                    starttime = selectedconfig[9]
+                    duration_in_s = (now - starttime).total_seconds()
+
+                    days = divmod(duration_in_s, 86400)  # Get days
+                    hours = divmod(days[1], 3600)  # Use remainder of days to calc hours
+                    minutes = divmod(hours[1], 60)  # Use remainder of hours to calc minutes
+                    seconds = divmod(minutes[1], 1)  # Use remainder of minutes to calc seconds
+
+                    runtimestring = "%d days, %d hours, %d minutes and %d seconds" % (days[0], hours[0], minutes[0], seconds[0])
+                else:
+                    runtimestring = "Not Running"
+
             else:
                 selectedconfig = ["","","","","","","","","",""]
+                runtimestring = "No configuration selected"
 
             if not configs:
                  configs =[]
 
-            return render_template("configurations.html", configs=configs, selectedconfig=selectedconfig)
+            return render_template("configurations.html", configs=configs, selectedconfig=selectedconfig, runtime=runtimestring)
 
 @app.route("/settings")
 def settings_load():
