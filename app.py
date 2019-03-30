@@ -151,17 +151,21 @@ def dashboard_load():
             mycursor.execute("SELECT * from configurations WHERE selected = 1")
             if mycursor.rowcount != 0:
                 selectedconfig = mycursor.fetchall()[0]
-                now = datetime.datetime.now()
-                starttime = selectedconfig[9]
-                duration_in_s = (now - starttime).total_seconds()
 
-                days = divmod(duration_in_s, 86400)  # Get days
-                hours = divmod(days[1], 3600)  # Use remainder of days to calc hours
-                minutes = divmod(hours[1], 60)  # Use remainder of hours to calc minutes
-                seconds = divmod(minutes[1], 1)  # Use remainder of minutes to calc seconds
+                if selectedconfig[8] == 1:
 
-                runtimestring = "%d days, %d hours, %d minutes and %d seconds" % (days[0], hours[0], minutes[0], seconds[0])
+                    now = datetime.datetime.now()
+                    starttime = selectedconfig[9]
+                    duration_in_s = (now - starttime).total_seconds()
 
+                    days = divmod(duration_in_s, 86400)  # Get days
+                    hours = divmod(days[1], 3600)  # Use remainder of days to calc hours
+                    minutes = divmod(hours[1], 60)  # Use remainder of hours to calc minutes
+                    seconds = divmod(minutes[1], 1)  # Use remainder of minutes to calc seconds
+
+                    runtimestring = "%d days, %d hours, %d minutes and %d seconds" % (days[0], hours[0], minutes[0], seconds[0])
+                else:
+                    runtimestring = "Not Running"
             else:
                 selectedconfig = ["", "", "", "", "", "", "", "", "", ""]
                 runtimestring = ""
