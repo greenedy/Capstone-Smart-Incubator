@@ -96,9 +96,7 @@ def dashboard_load():
         return redirect(url_for('login_load'))
 
     else:
-        print("Hi")
         if request.method == 'POST':
-            print("Hello")
             if request.form['action'] == "Stop":
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
                 cursor = mydb.cursor(buffered=True)
@@ -122,6 +120,15 @@ def dashboard_load():
                     mydb.commit()
                 cursor.close()
                 return redirect(url_for('dashboard_load'))
+            elif request.form['action'] == "Dismiss":
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+                cursor = mydb.cursor(buffered=True)
+                dismissednotification = request.form['id']
+                query = "UPDATE `notifications` SET `dismissed` = '1' WHERE `id` = " + str(dismissednotification)
+                cursor.execute(query)
+                mydb.commit()
+                cursor.close()
+                return redirect(url_for('dashboard_load'))
         else:
 
             # Connect to database
@@ -137,7 +144,7 @@ def dashboard_load():
 
             myresult = mycursor.fetchall()
 
-            mycursor.execute("SELECT * FROM notifications WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
+            mycursor.execute("SELECT * FROM notifications WHERE dismissed = 0 AND timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
 
             notifications = mycursor.fetchall()
 

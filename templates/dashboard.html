@@ -169,13 +169,53 @@
                         {% for item in notifications %}
                            {% if item[4]== 0 %}
                               {% if item[5]== 'error' %}
-                                 <a href="#" class="list-group-item list-group-item-action list-group-item-danger"><div class="float-left">{{item[2]}}</div><div class="float-right"><small>{{item[3]}}</small></div></a>
-                              {% elif item[5]== 'warning' %}
-                                 <a href="#" class="list-group-item list-group-item-action list-group-item-warning"><div class="float-left">{{item[2]}}</div><div class="float-right"><small>{{item[3]}}</small></div></a>
+                        <a href="#" class="list-group-item list-group-item-action list-group-item-danger">
+                           <div class="float-left">{{item[2]}}</div>
+                           <div class="float-right">
+                              <form action="/dashboard" method="POST">
+                                 <input type="hidden" name="action" value="Dismiss">
+                                 <input type="hidden" name="id" value="{{item[0]}}">
+                                 <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                              </form>
+                           </div>
+                           <div class="float-right"><small>{{item[3]}}</small></div>
+                        </a>
+                        {% elif item[5]== 'warning' %}
+                                 <a href="#" class="list-group-item list-group-item-action list-group-item-warning">
+                                    <div class="float-left">{{item[2]}}</div>
+                                    <div class="float-right">
+                                       <form action="/dashboard" method="POST">
+                                          <input type="hidden" name="action" value="Dismiss">
+                                          <input type="hidden" name="id" value="{{item[0]}}">
+                                          <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                       </form>
+                                    </div>
+                                    <div class="float-right"><small>{{item[3]}}</small></div>
+                                 </a>
                               {% elif item[5]== "success" %}
-                                 <a href="#" class="list-group-item list-group-item-action list-group-item-success"><div class="float-left">{{item[2]}}</div><div class="float-right"><small>{{item[3]}}</small></div></a>
+                                 <a href="#" class="list-group-item list-group-item-action list-group-item-success">
+                                    <div class="float-left">{{item[2]}}</div>
+                                    <div class="float-right">
+                                       <form action="/dashboard" method="POST">
+                                          <input type="hidden" name="action" value="Dismiss">
+                                          <input type="hidden" name="id" value="{{item[0]}}">
+                                          <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                       </form>
+                                    </div>
+                                    <div class="float-right"><small>{{item[3]}}</small></div>
+                                 </a>
                               {% else %}
-                                 <a href="#" class="list-group-item list-group-item-action list-group-item-dark"><div class="float-left">{{item[2]}}</div><div class="float-right"><small>{{item[3]}}</small></div></a>
+                                 <a href="#" class="list-group-item list-group-item-action list-group-item-dark">
+                                    <div class="float-left">{{item[2]}}</div>
+                                    <div class="float-right">
+                                       <form action="/dashboard" method="POST">
+                                          <input type="hidden" name="action" value="Dismiss">
+                                          <input type="hidden" name="id" value="{{item[0]}}">
+                                          <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                       </form>
+                                    </div>
+                                    <div class="float-right"><small>{{item[3]}}</small></div>
+                                 </a>
                               {% endif %}
                         {% endif %}
                       {% endfor %}

@@ -27,7 +27,7 @@ FREQUENCY_SECONDS = 3
 
 # Connect to the database
 mydb = mysql.connector.connect(host="localhost", user="pi", passwd="klcmc123", database="smartincubator")
-cursor = mydb.cursor()
+cursor = mydb.cursor(buffered=True)
 
 running = True;
 while running:
@@ -36,9 +36,10 @@ while running:
     # connect to database
     # find running config
     print("Retrieving configuration...")
-    cursor.execute("SELECT temperature FROM configurations WHERE running = 1;")
+    cursor.execute("SELECT temperature, humidity FROM configurations WHERE running = 1;")
     current = cursor.fetchone()
-    threshold = current[0]
+    temperatureThreshold = current[0]
+    humidityThreshold = current[1]
 
     if (len(current) == 0):
         print("No running configuration found. Aborting.")
@@ -59,12 +60,36 @@ while running:
 
     # Check the sensor readings
     print("Sensor data found. Processing...")
-    if (temp > int(threshold)):
+    if (temp > int(temperatureThreshold)):
         GPIO.output(PWR, False)
         RELAY_POWER = 'OFF'
-    elif (temp <= int(threshold)):
+    elif (temp <= int(temperatureThreshold)):
         GPIO.output(PWR, True)
         RELAY_POWER = 'ON'
+
+    # Check if temperature notification needs to be sent
+    if (temp > int(temperatureThreshold) + 3):
+        print("Inserting temperature notification into the database...")
+        query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
+        cursor.execute(query, ("Incubator temperature is " + str(temp) + " °C", "Incubator temperature is " + str(temp) + " °C", "error"))
+        mydb.commit()
+    elif (temp <= int(temperatureThreshold) - 3):
+        print("Inserting temperature notification into the database...")
+        query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
+        cursor.execute(query, ("Incubator temperature is " + str(temp) + " °C", "Incubator temperature is " + str(temp) + " °C", "error"))
+        mydb.commit()
+
+    # Check if humidity notification needs to be sent
+    if (humidity > int(humidityThreshold) + 3):
+        print("Inserting humidity notification into the database...")
+        query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
+        cursor.execute(query, ("Incubator humidity is " + str(humidity) + " %", "Incubator humidity is " + str(humidity) + " %", "error"))
+        mydb.commit()
+    elif (humidity <= int(humidityThreshold) - 3):
+        print("Inserting humidity notification into the database...")
+        query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
+        cursor.execute(query, ("Incubator humidity is " + str(humidity) + " %", "Incubator humidity is " + str(humidity) + " %", "error"))
+        mydb.commit()
 
     # Print the current readings
     # os.system('clear')
@@ -75,7 +100,7 @@ while running:
 
     # Add the readings to the database
     print("Inserting data into the database...")
-    query = "INSERT INTO test(temperature,humidity,power) VALUES(%s,%s,%s)"
+    query = "INSERT INTO incubator(temperature,humidity,power) VALUES(%s,%s,%s)"
     cursor.execute(query, (temp, humidity, RELAY_POWER))
     mydb.commit()
 
