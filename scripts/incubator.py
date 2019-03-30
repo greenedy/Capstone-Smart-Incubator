@@ -104,5 +104,11 @@ while running:
     cursor.execute(query, (temp, humidity, RELAY_POWER))
     mydb.commit()
 
+    # delete readings in database that are over 24 hours old
+    print("Deleting data in the database that is older than 24 hours...")
+    query = "DELETE FROM incubator WHERE timestamp < NOW() - INTERVAL 1 DAY"
+    cursor.execute(query)
+    mydb.commit()
+
     # Wait before continuing
     time.sleep(FREQUENCY_SECONDS)
