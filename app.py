@@ -133,7 +133,7 @@ def dashboard_load():
 
             # Connect to database
             mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
-            mycursor = mydb.cursor()
+            mycursor = mydb.cursor(buffered=True)
 
             now = datetime.datetime.now()
             nowString = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -188,8 +188,10 @@ def dashboard_load():
             }
             return render_template('dashboard.html', **templateData, notifications=notifications, selectedconfig=selectedconfig, runtime=runtimestring)
 
-
-#
+@app.route('/incubate', methods=['GET', 'POST'])
+def incubate():
+    os.system('python /scripts/incubator.py')
+    return
 
 @app.route('/configurations', methods=['GET', 'POST'])
 def get_data():
