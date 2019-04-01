@@ -144,8 +144,8 @@
                      <h4 class="my-0 font-weight-normal">Temperature</h4>
                   </div>
                   <div class="card-body">
-                     <h1 class="card-title">{{temperatureData[temperatureData|length-1][1]}} °C</h1>
-                     <h4><small class="text-white">@ {{temperatureData[temperatureData|length-1][0]}}</small></h4>
+                     <h1 id="temperatureValue" class="card-title"></h1>
+                     <h4><small id="temperatureTime" class="text-white"></small></h4>
                   </div>
                </div>
             </div>
@@ -155,8 +155,8 @@
                      <h4 class="my-0 font-weight-normal">Humidity</h4>
                   </div>
                   <div class="card-body">
-                     <h1 class="card-title">{{humidityData[humidityData|length-1][1]}} %</h1>
-                     <h4><small class="text-white">@ {{humidityData[humidityData|length-1][0]}}</small></h4>
+                     <h1 id="humidityValue" class="card-title"></h1>
+                     <h4><small id="humidityTime" class="text-white"></small></h4>
                   </div>
                </div>
             </div>
@@ -364,6 +364,24 @@
                     var getData = $.get('/data');
 
                     getData.done(function(results){
+
+                        var latestTempValue = results.temperatureData[ 0][1];
+                        var latestTempTime = results.temperatureData[ 0][0];
+                        var tempValueElement = document.getElementById("temperatureValue");
+                        tempValueElement.innerHTML = latestTempValue + " °C"
+                        var tempTimeElement = document.getElementById("temperatureTime");
+                        tempTimeElement.innerHTML = latestTempTime
+
+                        console.log("Temp: "+latestTempValue +" @"+latestTempTime);
+
+                        var latestHumidityValue = results.humidityData[ 0][1];
+                        var latestHumidityTime = results.humidityData[0][0];
+                        var humidityValueElement = document.getElementById("humidityValue");
+                        humidityValueElement.innerHTML = latestHumidityValue + " %"
+                        var humidityTimeElement = document.getElementById("humidityTime");
+                        humidityTimeElement.innerHTML = latestHumidityTime
+
+                        console.log("Humidity: "+latestHumidityValue +" @"+latestHumidityTime);
 
                         var temperatureData = [];
                         for (var i in results.temperatureData) {

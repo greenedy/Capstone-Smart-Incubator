@@ -106,9 +106,7 @@ def dashboard_load():
                     query = "UPDATE `configurations` SET `running` = '0' WHERE `id` = " + str(runningconfig)
                     cursor.execute(query)
                     mydb.commit()
-                    query = "TRUNCATE `smartincubator`.`incubator`;"
-                    cursor.execute(query)
-                    mydb.commit()
+
 
                 cursor.close()
                 return redirect(url_for('dashboard_load'))
@@ -123,6 +121,7 @@ def dashboard_load():
                     cursor.execute(query)
                     mydb.commit()
                 cursor.close()
+                os.system('python /scripts/incubator.py')
                 return redirect(url_for('dashboard_load'))
             elif request.form['action'] == "Dismiss":
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
@@ -213,10 +212,6 @@ def data():
 
     return jsonify({'temperatureData' : temperatureData, 'humidityData' : humidityData})
 
-@app.route('/incubate', methods=['GET', 'POST'])
-def incubate():
-    os.system('python /scripts/incubator.py')
-    return
 
 @app.route('/configurations', methods=['GET', 'POST'])
 def get_data():
@@ -281,6 +276,9 @@ def get_data():
                     cursor.execute(query)
                     mydb.commit()
                 cursor.execute("UPDATE `configurations` SET `selected` = '1' WHERE `id` = " + configid)
+                mydb.commit()
+                query = "TRUNCATE `smartincubator`.`incubator`;"
+                cursor.execute(query)
                 mydb.commit()
                 cursor.close()
                 return redirect(url_for('get_data'))
