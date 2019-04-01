@@ -106,6 +106,10 @@ def dashboard_load():
                     query = "UPDATE `configurations` SET `running` = '0' WHERE `id` = " + str(runningconfig)
                     cursor.execute(query)
                     mydb.commit()
+                    query = "TRUNCATE `smartincubator`.`incubator`;"
+                    cursor.execute(query)
+                    mydb.commit()
+
                 cursor.close()
                 return redirect(url_for('dashboard_load'))
             elif request.form['action'] == "Run":
