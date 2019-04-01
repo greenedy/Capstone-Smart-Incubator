@@ -73,7 +73,7 @@
                   <div class="card-footer">
                      <div class="row">
                      <div class="col-sm-6">
-                        <h6><b>Current runtime:</b> {{runtime}}</h6>
+                        <h6 id="runTime"></h6>
                      </div>
                      <div class="col-sm-6 text-right ">
                            <!-- Where Run/Stop Buttons were -->
@@ -168,7 +168,7 @@
                             <td class="pb-3"><input type="humidity" class="form-control" name="humidity" required></td>
                         </tr>
                         <tr class="pb-1">
-                            <td class="text-right pr-1 pb-3"><b>Duration(days):</b></td>
+                            <td class="text-right pr-1 pb-3"><b>Duration(Days):</b></td>
                            <td class="pb-3"><input type="duration" class="form-control" name="duration" required></td>
                         </tr>
                         <tr class="pb-1">
@@ -212,15 +212,15 @@
                            <td class="pb-3"><input type="species" class="form-control" name="species" value="{{item[2]}}" required></td>
                         </tr>
                         <tr class="pb-1">
-                            <td class="text-right pr-1 pb-3"><b>Temperature:</b></td>
+                            <td class="text-right pr-1 pb-3"><b>Temperature(°C):</b></td>
                            <td class="pb-3"><input type="temperature" class="form-control" name="temperature" value="{{item[3]}}" required></td>
                         </tr>
                         <tr class="pb-1">
-                            <td class="text-right pr-1 pb-3"><b>Humidity:</b></td>
+                            <td class="text-right pr-1 pb-3"><b>Humidity(%):</b></td>
                             <td class="pb-3"><input type="humidity" class="form-control" name="humidity" value="{{item[4]}}" required></td>
                         </tr>
                         <tr class="pb-1">
-                            <td class="text-right pr-1 pb-3"><b>Duration:</b></td>
+                            <td class="text-right pr-1 pb-3"><b>Duration(Days):</b></td>
                            <td class="pb-3"><input type="duration" class="form-control" name="duration" value="{{item[5]}}" required></td>
                         </tr>
                         <tr class="pb-1">
@@ -342,4 +342,31 @@
          </div>
           </div>
       </div>
+   <script>
+        window.onload = function() {
+              {% if running== true %}
+                timer("{{rundate}}", 'runTime');
+              {% endif %}
+            };
+
+            function timer(countFrom, id) {
+              countFrom = new Date(countFrom).getTime();
+              var now = new Date(),
+                  countFrom = new Date(countFrom),
+                  timeDifference = (now - countFrom);
+
+              var secondsInADay = 60 * 60 * 1000 * 24,
+                  secondsInAHour = 60 * 60 * 1000;
+
+              days = Math.floor(timeDifference / (secondsInADay) * 1);
+              hours = Math.floor((timeDifference % (secondsInADay)) / (secondsInAHour) * 1);
+              minutes = Math.floor(((timeDifference % (secondsInADay)) % (secondsInAHour)) / (60 * 1000) * 1);
+              seconds = Math.floor((((timeDifference % (secondsInADay)) % (secondsInAHour)) % (60 * 1000)) / 1000 * 1);
+
+              var e = document.getElementById(id);
+              e.innerHTML ="<b>Runtime:</b> "+ days+" days "+hours+" hours "+ minutes+" minutes "+ seconds +" seconds";
+              clearTimeout(timer.interval);
+              timer.interval = setTimeout(function(){ timer(countFrom, id); }, 1000);
+            }
+   </script>
    </body>

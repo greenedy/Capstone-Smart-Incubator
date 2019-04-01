@@ -1,5 +1,5 @@
 
-from flask import Flask, flash, redirect, render_template, request, session, abort, url_for
+from flask import Flask, flash, redirect, render_template, request, session, abort, url_for, jsonify
 from passlib.hash import sha256_crypt
 import mysql.connector
 import datetime
@@ -137,7 +137,7 @@ def dashboard_load():
 
             now = datetime.datetime.now()
             nowString = now.strftime("%Y-%m-%d %H:%M:%S")
-            yesterday = datetime.datetime.now().replace(day=now.day - 1)
+            yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
             yesterdayString = yesterday.strftime("%Y-%m-%d %H:%M:%S")
 
             mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
@@ -153,22 +153,14 @@ def dashboard_load():
                 selectedconfig = mycursor.fetchall()[0]
 
                 if selectedconfig[8] == 1:
-
-                    now = datetime.datetime.now()
+                    running=True
                     starttime = selectedconfig[9]
-                    duration_in_s = (now - starttime).total_seconds()
-
-                    days = divmod(duration_in_s, 86400)  # Get days
-                    hours = divmod(days[1], 3600)  # Use remainder of days to calc hours
-                    minutes = divmod(hours[1], 60)  # Use remainder of hours to calc minutes
-                    seconds = divmod(minutes[1], 1)  # Use remainder of minutes to calc seconds
-
-                    runtimestring = "%d days, %d hours, %d minutes and %d seconds" % (days[0], hours[0], minutes[0], seconds[0])
                 else:
-                    runtimestring = "Not Running"
+                    running=False
+                    starttime =""
+
             else:
                 selectedconfig = ["", "", "", "", "", "", "", "", "", ""]
-                runtimestring = ""
 
             temperatureData = []
             humidityData = []
@@ -186,7 +178,36 @@ def dashboard_load():
                 'temperatureData': temperatureData,
                 'humidityData': humidityData
             }
-            return render_template('dashboard.html', **templateData, notifications=notifications, selectedconfig=selectedconfig, runtime=runtimestring)
+            return render_template('dashboard.html', **templateData, notifications=notifications, selectedconfig=selectedconfig, running=running, rundate=starttime)
+
+
+@app.route('/data')
+def data():
+    # Connect to database
+    mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+    mycursor = mydb.cursor()
+    now = datetime.datetime.now()
+    nowString = now.strftime("%Y-%m-%d %H:%M:%S")
+    yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+    yesterdayString = yesterday.strftime("%Y-%m-%d %H:%M:%S")
+
+    mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
+
+    myresult = mycursor.fetchall()
+
+    temperatureData = []
+    humidityData = []
+
+    if not myresult:
+        temperatureData.append(["0000-00-00 00:00:00", "0.0"])
+        humidityData.append(["0000-00-00 00:00:00", "0.0"])
+
+    else:
+        for row in myresult:
+            temperatureData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"), str(row[1]).lstrip()])
+            humidityData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"), str(row[0]).lstrip()])
+
+    return jsonify({'temperatureData' : temperatureData, 'humidityData' : humidityData})
 
 @app.route('/incubate', methods=['GET', 'POST'])
 def incubate():
@@ -292,27 +313,21 @@ def get_data():
                 selectedconfig = cursor.fetchall()[0]
 
                 if selectedconfig[8] == 1:
-                    now = datetime.datetime.now()
+                    running = True
                     starttime = selectedconfig[9]
-                    duration_in_s = (now - starttime).total_seconds()
 
-                    days = divmod(duration_in_s, 86400)  # Get days
-                    hours = divmod(days[1], 3600)  # Use remainder of days to calc hours
-                    minutes = divmod(hours[1], 60)  # Use remainder of hours to calc minutes
-                    seconds = divmod(minutes[1], 1)  # Use remainder of minutes to calc seconds
-
-                    runtimestring = "%d days, %d hours, %d minutes and %d seconds" % (days[0], hours[0], minutes[0], seconds[0])
                 else:
-                    runtimestring = "Not Running"
+                    running = False
+                    starttime = ""
 
             else:
-                selectedconfig = ["","","","","","","","","",""]
-                runtimestring = "No configuration selected"
+                selectedconfig = ["", "", "", "", "", "", "", "", "", ""]
 
             if not configs:
-                 configs =[]
+                configs = []
 
-            return render_template("configurations.html", configs=configs, selectedconfig=selectedconfig, runtime=runtimestring)
+            return render_template("configurations.html", configs=configs, selectedconfig=selectedconfig, running=running, rundate=starttime)
+
 
 @app.route("/settings")
 def settings_load():

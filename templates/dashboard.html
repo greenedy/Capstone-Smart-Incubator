@@ -74,13 +74,11 @@
                               {% endif %}
 
                               {% if selectedconfig[8]== 0 %}
-                                <form action="/incubate" method="POST">
                                   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#runConfigurationModal">Run</button>
-                                </form>
                               {% endif %}
                               {% if selectedconfig[8]== 1 %}
                                   <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#stopConfigurationModal">Stop</button>
-                                  <h6><b>Runtime: </b>{{runtime}}</h6>
+                                  <h6 id="runTime"></h6>
                               {% endif %}
                             </h5>
                </div>
@@ -247,208 +245,242 @@
 
           <script>
 
-            var configTemperature = {
-            	type: 'line',
-            	data: {
-            		datasets: [{
-                                 label: 'Temperature',
-                                 yAxisID: 'Temperature',
-                                 fontColor: '#fff',
-                                 backgroundColor: 'rgb(255, 99, 132)',
-                                 borderColor: 'rgb(255, 99, 132)',
-                                 data: [{% for item in temperatureData %}
-                                       {% if not loop.last%}
-                                           {x: '{{item[0]}}', y: {{item[1]}}},
-                                         {% else %}
-                                             {x: '{{item[0]}}', y: {{item[1]}} }
-                                        {% endif %}
-                                       {% endfor %}],
-
-                                 fill: false
-                               }],
-            		             lineTension: 0
-            	},
-            	options: {
-            		responsive: true,
-            		legend: {
-                               labels: {
-                               fontColor: 'white'
-                              }
-                            },
-            		title: {
-            			display: true,
-                             fontColor: "white",
-            			text: 'Temperature Graph',
-
-            		},
-            		tooltips: {
-            			mode: 'nearest',
-            			intersect: false,
-            			callbacks: {
-                           label: function(tooltipItems, data) {
-                           return 'Temperature: ' + tooltipItems.yLabel + '°C';
-                           }
-                        }
-            		},
-            		hover: {
-            			mode: 'nearest',
-            			intersect: false
-            		},
-            		scales: {
-            			xAxes: [{
-            			     type: 'time',
-                                time: {
-                                  unit: 'hour',
-                                  unitStepSize: 1,
-                                  displayFormats: {
-                                    'second': 'HH:mm:ss a',
-
-                                   }
-                                  },
-            				display: true,
-            				gridLines: {
-                                      color: 'rgb(255, 255, 255)'
-                                  },
-                                  ticks: {
-                                      fontColor: "white",
-                                  },
-            				scaleLabel: {
-            					display: true,
-            					labelString: 'Time',
-            					fontColor: "white",
-
-            				}
-            			}],
-            			yAxes: [{
-            			    id: 'Temperature',
-            			    position: 'left',
-            				display: true,
-            				gridLines: {
-                                      color: 'rgb(255, 255, 255)',
-                                      zeroLineColor: 'rgb(255, 255, 255)'
-                                  },
-                                  ticks: {
-                                      fontColor: "white",
-                                  },
-            				scaleLabel: {
-            					display: true,
-            					labelString: 'Temperature(°C)',
-            					fontColor: 'rgb(255, 255, 255)',
-
-            				}
-            			}]
-            		}
-            	}
-            };
-
-            var configHumidity = {
-            	type: 'line',
-            	data: {
-            		datasets: [{
-                                 label: 'Humidity',
-                                 yAxisID: 'Humidity',
-                                 fontColor: '#fff',
-                                 backgroundColor: 'rgb(54, 162, 235)',
-                                 borderColor: 'rgb(54, 162, 235)',
-                                 data: [{% for item in humidityData %}
-                                       {% if not loop.last%}
-                                           {x: '{{item[0]}}', y: {{item[1]}}},
-                                         {% else %}
-                                             {x: '{{item[0]}}', y: {{item[1]}} }
-                                        {% endif %}
-                                       {% endfor %}],
-
-                                 fill: false
-                               }],
-            		             lineTension: 0
-            	},
-            	options: {
-            		responsive: true,
-            		legend: {
-                               labels: {
-                               fontColor: 'white'
-                              }
-                            },
-            		title: {
-            			display: true,
-                             fontColor: "white",
-            			text: 'Humidity Graph',
-
-            		},
-            		tooltips: {
-            			mode: 'nearest',
-            			intersect: false,
-            			callbacks: {
-                           label: function(tooltipItems, data) {
-                           return 'Humidity: ' + tooltipItems.yLabel + '%';
-                           }
-                        }
-            		},
-            		hover: {
-            			mode: 'nearest',
-            			intersect: false
-            		},
-            		scales: {
-            			xAxes: [{
-            			     type: 'time',
-                                time: {
-                                  unit: 'hour',
-                                  unitStepSize: 1,
-                                  displayFormats: {
-                                    'second': 'HH:mm:ss a',
-
-                                   }
-                                  },
-            				display: true,
-            				gridLines: {
-                                      color: 'rgb(255, 255, 255)'
-                                  },
-                                  ticks: {
-                                      fontColor: "white",
-                                  },
-            				scaleLabel: {
-            					display: true,
-            					labelString: 'Time',
-            					fontColor: "white",
-
-            				}
-            			}],
-            			yAxes: [{
-            			    id: 'Humidity',
-            			    position: 'left',
-            				display: true,
-            				gridLines: {
-                                      color: 'rgb(255, 255, 255)',
-                                      zeroLineColor: 'rgb(255, 255, 255)'
-                                  },
-                                  ticks: {
-                                      fontColor: "white",
-                                  },
-            				scaleLabel: {
-            					display: true,
-            					labelString: 'Humidity(%)',
-            					fontColor: 'rgb(255, 255, 255)',
-
-            				}
-            			}]
-            		}
-            	}
-            };
-
-
             window.onload = function() {
-
-            	var ctxTemperature = document.getElementById('canvasTemperature').getContext('2d');
-            	window.myLine = new Chart(ctxTemperature, configTemperature);
-
-            	var ctxHumidity = document.getElementById('canvasHumidity').getContext('2d');
-            	window.myLine = new Chart(ctxHumidity, configHumidity);
-
+              {% if running== true %}
+                timer("{{rundate}}", 'runTime');
+              {% endif %}
             };
 
+            function timer(countFrom, id) {
+              countFrom = new Date(countFrom).getTime();
+              var now = new Date(),
+                  countFrom = new Date(countFrom),
+                  timeDifference = (now - countFrom);
+
+              var secondsInADay = 60 * 60 * 1000 * 24,
+                  secondsInAHour = 60 * 60 * 1000;
+
+              days = Math.floor(timeDifference / (secondsInADay) * 1);
+              hours = Math.floor((timeDifference % (secondsInADay)) / (secondsInAHour) * 1);
+              minutes = Math.floor(((timeDifference % (secondsInADay)) % (secondsInAHour)) / (60 * 1000) * 1);
+              seconds = Math.floor((((timeDifference % (secondsInADay)) % (secondsInAHour)) % (60 * 1000)) / 1000 * 1);
+
+              var e = document.getElementById(id);
+              e.innerHTML ="<b>Runtime:</b> "+ days+" days "+hours+" hours "+ minutes+" minutes "+ seconds +" seconds";
+              clearTimeout(timer.interval);
+              timer.interval = setTimeout(function(){ timer(countFrom, id); }, 1000);
+            }
+
+            displayCharts();
+
+            setInterval(function() {
+             displayCharts();
+            }, 10000);
+
+            function displayCharts(){
+                    var getData = $.get('/data');
+
+                    getData.done(function(results){
+
+                        var temperatureData = [];
+                        for (var i in results.temperatureData) {
+                            temperatureData.push({
+                                x : new Date(results.temperatureData[i][0]),
+                                y : results.temperatureData[i][1]
+                            });
+                        }
+
+                        var humidityData = [];
+                        for (var i in results.humidityData) {
+                            humidityData.push({
+                                x : new Date(results.humidityData[i][0]),
+                                y : results.humidityData[i][1]
+                            });
+                        }
 
 
+                        var configTemperature = {
+                            type: 'line',
+                            data: {
+                                datasets: [{
+                                             label: 'Temperature',
+                                             yAxisID: 'Temperature',
+                                             fontColor: '#fff',
+                                             backgroundColor: 'rgb(255, 99, 132)',
+                                             borderColor: 'rgb(255, 99, 132)',
+                                             data: temperatureData,
+                                             fill: false
+                                           }],
+                                             lineTension: 0
+                            },
+                            options: {
+                                responsive: true,
+                                legend: {
+                                           labels: {
+                                           fontColor: 'white'
+                                          }
+                                        },
+                                title: {
+                                    display: true,
+                                         fontColor: "white",
+                                    text: 'Temperature Graph',
 
+                                },
+                                tooltips: {
+                                    mode: 'nearest',
+                                    intersect: false,
+                                    callbacks: {
+                                       label: function(tooltipItems, data) {
+                                       return 'Temperature: ' + tooltipItems.yLabel + '°C';
+                                       }
+                                    }
+                                },
+                                hover: {
+                                    mode: 'nearest',
+                                    intersect: false
+                                },
+                                scales: {
+                                    xAxes: [{
+                                         type: 'time',
+                                            time: {
+                                              unit: 'hour',
+                                              unitStepSize: 1,
+                                              displayFormats: {
+                                                'second': 'HH:mm:ss a',
+
+                                               }
+                                              },
+                                        display: true,
+                                        gridLines: {
+                                                  color: 'rgb(255, 255, 255)'
+                                              },
+                                              ticks: {
+                                                  fontColor: "white",
+                                              },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Time',
+                                            fontColor: "white",
+
+                                        }
+                                    }],
+                                    yAxes: [{
+                                        id: 'Temperature',
+                                        position: 'left',
+                                        display: true,
+                                        gridLines: {
+                                                  color: 'rgb(255, 255, 255)',
+                                                  zeroLineColor: 'rgb(255, 255, 255)'
+                                              },
+                                              ticks: {
+                                                  fontColor: "white",
+                                              },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Temperature(°C)',
+                                            fontColor: 'rgb(255, 255, 255)',
+
+                                        }
+                                    }]
+                                }
+                            }
+                        };
+
+                        var configHumidity = {
+                            type: 'line',
+                            data: {
+                                datasets: [{
+                                             label: 'Humidity',
+                                             yAxisID: 'Humidity',
+                                             fontColor: '#fff',
+                                             backgroundColor: 'rgb(54, 162, 235)',
+                                             borderColor: 'rgb(54, 162, 235)',
+                                             data: humidityData,
+                                             fill: false
+                                           }],
+                                             lineTension: 0
+                            },
+                            options: {
+                                responsive: true,
+                                legend: {
+                                           labels: {
+                                           fontColor: 'white'
+                                          }
+                                        },
+                                title: {
+                                    display: true,
+                                         fontColor: "white",
+                                    text: 'Humidity Graph',
+
+                                },
+                                tooltips: {
+                                    mode: 'nearest',
+                                    intersect: false,
+                                    callbacks: {
+                                       label: function(tooltipItems, data) {
+                                       return 'Humidity: ' + tooltipItems.yLabel + '%';
+                                       }
+                                    }
+                                },
+                                hover: {
+                                    mode: 'nearest',
+                                    intersect: false
+                                },
+                                scales: {
+                                    xAxes: [{
+                                         type: 'time',
+                                            time: {
+                                              unit: 'hour',
+                                              unitStepSize: 1,
+                                              displayFormats: {
+                                                'second': 'HH:mm:ss a',
+
+                                               }
+                                              },
+                                        display: true,
+                                        gridLines: {
+                                                  color: 'rgb(255, 255, 255)'
+                                              },
+                                              ticks: {
+                                                  fontColor: "white",
+                                              },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Time',
+                                            fontColor: "white",
+
+                                        }
+                                    }],
+                                    yAxes: [{
+                                        id: 'Humidity',
+                                        position: 'left',
+                                        display: true,
+                                        gridLines: {
+                                                  color: 'rgb(255, 255, 255)',
+                                                  zeroLineColor: 'rgb(255, 255, 255)'
+                                              },
+                                              ticks: {
+                                                  fontColor: "white",
+                                              },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Humidity(%)',
+                                            fontColor: 'rgb(255, 255, 255)',
+
+                                        }
+                                    }]
+                                }
+                            }
+                        };
+
+                    var ctxTemperature = document.getElementById('canvasTemperature').getContext('2d');
+                    window.myLine = new Chart(ctxTemperature, configTemperature);
+
+                    var ctxHumidity = document.getElementById('canvasHumidity').getContext('2d');
+                    window.myLine = new Chart(ctxHumidity, configHumidity);
+
+                });
+            }
          </script>
       </div>
 
