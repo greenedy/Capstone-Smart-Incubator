@@ -17,11 +17,10 @@
          -ms-user-select: none;
          }
          @media (min-width: 1200px) {
-            .container{
-               max-width: 85%;
-            }
+         .container{
+         max-width: 85%;
          }
-
+         }
       </style>
    </head>
    <body class="text-white bg-secondary">
@@ -49,20 +48,20 @@
             </ul>
          </div>
          <ul id="logout_sidebar_button" class="nav nav-sidebar ">
-            <li class="text-center"><p>User:{{session['username']}}</p></li>
+            <li class="text-center">
+               <p>User:{{session['username']}}</p>
+            </li>
             <li><a href="/logout"><button type="button" class="btn btn-primary btn-block" data-target="#" >Logout</button></a></li>
          </ul>
       </nav>
       <div class="container">
-
          <div class="justify-content-between border-bottom pt-3">
             <div class="row">
                <div class="col-sm-6">
-
-               <h1 class="h2">Dashboard: </h1>
-
+                  <h1 class="h2">Dashboard: </h1>
                </div>
                <div class="col-sm-6 float-right">
+                   
                          <h5><b>Selected Configuration: </b>{{selectedconfig[1]}}
 
                             <b>&nbsp;&nbsp;&nbsp;Status:</b>
@@ -84,7 +83,6 @@
                </div>
             </div>
          </div>
-
          <!-- Run modal(display confirm run if not running) -->
          <div class="modal fade" id="runConfigurationModal" tabindex="-1" role="dialog" aria-labelledby="runConfigurationModal" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -98,8 +96,8 @@
                   <form action="/dashboard" method="POST">
                      <input type="hidden" name="action" value="Run">
                      <div class="modal-body bg-secondary">
-                         <div class="container">
-                             <p>Run the selected configuration?</p>
+                        <div class="container">
+                           <p>Run the selected configuration?</p>
                         </div>
                      </div>
                      <div class="modal-footer bg-secondary">
@@ -110,7 +108,6 @@
                </div>
             </div>
          </div>
-
          <!-- Stop modal(display confirm run if not running and confirm stop if running) -->
          <div class="modal fade" id="stopConfigurationModal" tabindex="-1" role="dialog" aria-labelledby="stopConfigurationModal" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -124,8 +121,8 @@
                   <form action="/dashboard" method="POST">
                      <input type="hidden" name="action" value="Stop">
                      <div class="modal-body bg-secondary">
-                         <div class="container">
-                             <p>Are you sure you want to stop the current running configuration?</p>
+                        <div class="container">
+                           <p>Are you sure you want to stop the current running configuration?</p>
                         </div>
                      </div>
                      <div class="modal-footer bg-secondary">
@@ -136,7 +133,6 @@
                </div>
             </div>
          </div>
-
          <div class="row pt-3">
             <div class="col-sm-3 text-center">
                <div class="card mb-4 shadow-sm text-white bg-success">
@@ -144,8 +140,8 @@
                      <h4 class="my-0 font-weight-normal">Temperature</h4>
                   </div>
                   <div class="card-body">
-                     <h1 class="card-title">{{temperatureData[temperatureData|length-1][1]}} °C</h1>
-                     <h4><small class="text-white">@ {{temperatureData[temperatureData|length-1][0]}}</small></h4>
+                     <h1 id="temperatureValue" class="card-title"></h1>
+                     <h4><small id="temperatureTime" class="text-white"></small></h4>
                   </div>
                </div>
             </div>
@@ -155,8 +151,8 @@
                      <h4 class="my-0 font-weight-normal">Humidity</h4>
                   </div>
                   <div class="card-body">
-                     <h1 class="card-title">{{humidityData[humidityData|length-1][1]}} %</h1>
-                     <h4><small class="text-white">@ {{humidityData[humidityData|length-1][0]}}</small></h4>
+                     <h1 id="humidityValue" class="card-title"></h1>
+                     <h4><small id="humidityTime" class="text-white"></small></h4>
                   </div>
                </div>
             </div>
@@ -168,8 +164,9 @@
                   <div class="card-body">
                      <div class="list-group">
                         {% for item in notifications %}
-                           {% if item[4]== 0 %}
-                              {% if item[5]== 'error' %}
+                        {% if loop.index <= 3 %}
+                        {% if item[4]== 0 %}
+                        {% if item[5]== 'error' %}
                         <a href="#" class="list-group-item list-group-item-action list-group-item-danger">
                            <div class="float-left">{{item[2]}}</div>
                            <div class="float-right">
@@ -182,274 +179,399 @@
                            <div class="float-right"><small>{{item[3]}}</small></div>
                         </a>
                         {% elif item[5]== 'warning' %}
-                                 <a href="#" class="list-group-item list-group-item-action list-group-item-warning">
-                                    <div class="float-left">{{item[2]}}</div>
-                                    <div class="float-right">
-                                       <form action="/dashboard" method="POST">
-                                          <input type="hidden" name="action" value="Dismiss">
-                                          <input type="hidden" name="id" value="{{item[0]}}">
-                                          <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
-                                       </form>
-                                    </div>
-                                    <div class="float-right"><small>{{item[3]}}</small></div>
-                                 </a>
-                              {% elif item[5]== "success" %}
-                                 <a href="#" class="list-group-item list-group-item-action list-group-item-success">
-                                    <div class="float-left">{{item[2]}}</div>
-                                    <div class="float-right">
-                                       <form action="/dashboard" method="POST">
-                                          <input type="hidden" name="action" value="Dismiss">
-                                          <input type="hidden" name="id" value="{{item[0]}}">
-                                          <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
-                                       </form>
-                                    </div>
-                                    <div class="float-right"><small>{{item[3]}}</small></div>
-                                 </a>
-                              {% else %}
-                                 <a href="#" class="list-group-item list-group-item-action list-group-item-dark">
-                                    <div class="float-left">{{item[2]}}</div>
-                                    <div class="float-right">
-                                       <form action="/dashboard" method="POST">
-                                          <input type="hidden" name="action" value="Dismiss">
-                                          <input type="hidden" name="id" value="{{item[0]}}">
-                                          <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
-                                       </form>
-                                    </div>
-                                    <div class="float-right"><small>{{item[3]}}</small></div>
-                                 </a>
-                              {% endif %}
+                        <a href="#" class="list-group-item list-group-item-action list-group-item-warning">
+                           <div class="float-left">{{item[2]}}</div>
+                           <div class="float-right">
+                              <form action="/dashboard" method="POST">
+                                 <input type="hidden" name="action" value="Dismiss">
+                                 <input type="hidden" name="id" value="{{item[0]}}">
+                                 <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                              </form>
+                           </div>
+                           <div class="float-right"><small>{{item[3]}}</small></div>
+                        </a>
+                        {% elif item[5]== "success" %}
+                        <a href="#" class="list-group-item list-group-item-action list-group-item-success">
+                           <div class="float-left">{{item[2]}}</div>
+                           <div class="float-right">
+                              <form action="/dashboard" method="POST">
+                                 <input type="hidden" name="action" value="Dismiss">
+                                 <input type="hidden" name="id" value="{{item[0]}}">
+                                 <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                              </form>
+                           </div>
+                           <div class="float-right"><small>{{item[3]}}</small></div>
+                        </a>
+                        {% else %}
+                        <a href="#" class="list-group-item list-group-item-action list-group-item-dark">
+                           <div class="float-left">{{item[2]}}</div>
+                           <div class="float-right">
+                              <form action="/dashboard" method="POST">
+                                 <input type="hidden" name="action" value="Dismiss">
+                                 <input type="hidden" name="id" value="{{item[0]}}">
+                                 <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                              </form>
+                           </div>
+                           <div class="float-right"><small>{{item[3]}}</small></div>
+                        </a>
                         {% endif %}
-                      {% endfor %}
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                     </div>
+                  </div>
+                  <div class="card-footer">
+                     <div class="row">
+                        <div class="col-sm-12 text-right ">
+                           <button type="button" class="btn-primary" data-toggle="modal" data-target="#notificationsModal">More</button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- Notifications modal() -->
+            <div class="modal fade" id="notificationsModal" tabindex="-1" role="dialog" aria-labelledby="notificationsModal" aria-hidden="true">
+               <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content ">
+                     <div class="modal-header bg-primary">
+                        <h5 class="modal-title" id="notificationsTitle">Notifications</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                     </div>
+                     <div class="list-group">
+                        {% for item in notifications %}
+                        {% if item[4]== 0 %}
+                        {% if item[5]== 'error' %}
+                        <a href="#" class="list-group-item list-group-item-action list-group-item-danger">
+                           <div class="float-left">{{item[2]}}</div>
+                           <div class="float-right">
+                              <form action="/dashboard" method="POST">
+                                 <input type="hidden" name="action" value="Dismiss">
+                                 <input type="hidden" name="id" value="{{item[0]}}">
+                                 <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                              </form>
+                           </div>
+                           <div class="float-right"><small>{{item[3]}}</small></div>
+                        </a>
+                        {% elif item[5]== 'warning' %}
+                        <a href="#" class="list-group-item list-group-item-action list-group-item-warning">
+                           <div class="float-left">{{item[2]}}</div>
+                           <div class="float-right">
+                              <form action="/dashboard" method="POST">
+                                 <input type="hidden" name="action" value="Dismiss">
+                                 <input type="hidden" name="id" value="{{item[0]}}">
+                                 <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                              </form>
+                           </div>
+                           <div class="float-right"><small>{{item[3]}}</small></div>
+                        </a>
+                        {% elif item[5]== "success" %}
+                        <a href="#" class="list-group-item list-group-item-action list-group-item-success">
+                           <div class="float-left">{{item[2]}}</div>
+                           <div class="float-right">
+                              <form action="/dashboard" method="POST">
+                                 <input type="hidden" name="action" value="Dismiss">
+                                 <input type="hidden" name="id" value="{{item[0]}}">
+                                 <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                              </form>
+                           </div>
+                           <div class="float-right"><small>{{item[3]}}</small></div>
+                        </a>
+                        {% else %}
+                        <a href="#" class="list-group-item list-group-item-action list-group-item-dark">
+                           <div class="float-left">{{item[2]}}</div>
+                           <div class="float-right">
+                              <form action="/dashboard" method="POST">
+                                 <input type="hidden" name="action" value="Dismiss">
+                                 <input type="hidden" name="id" value="{{item[0]}}">
+                                 <button type="submit" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+                              </form>
+                           </div>
+                           <div class="float-right"><small>{{item[3]}}</small></div>
+                        </a>
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                     </div>
+                     <div class="modal-footer bg-secondary">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">Back</button>
                      </div>
                   </div>
                </div>
             </div>
          </div>
          <div>
-
          </div>
          <br>
-
-            <div class="row pt-3">
-               <div class="col-md-6">
-                  <div style="width:100%;">
-                     <canvas id="canvasTemperature" ></canvas>
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div style="width:100%;">
-                     <canvas id="canvasHumidity" ></canvas>
-                  </div>
+         <div class="row pt-3">
+            <div class="col-md-6">
+               <div style="width:100%;">
+                  <canvas id="canvasTemperature" ></canvas>
                </div>
             </div>
-
-          <script>
-
-            var configTemperature = {
-            	type: 'line',
-            	data: {
-            		datasets: [{
-                                 label: 'Temperature',
-                                 yAxisID: 'Temperature',
-                                 fontColor: '#fff',
-                                 backgroundColor: 'rgb(255, 99, 132)',
-                                 borderColor: 'rgb(255, 99, 132)',
-                                 data: [{% for item in temperatureData %}
-                                       {% if not loop.last%}
-                                           {x: '{{item[0]}}', y: {{item[1]}}},
-                                         {% else %}
-                                             {x: '{{item[0]}}', y: {{item[1]}} }
-                                        {% endif %}
-                                       {% endfor %}],
-
-                                 fill: false
-                               }],
-            		             lineTension: 0
-            	},
-            	options: {
-            		responsive: true,
-            		legend: {
-                               labels: {
-                               fontColor: 'white'
-                              }
-                            },
-            		title: {
-            			display: true,
-                             fontColor: "white",
-            			text: 'Temperature Graph',
-
-            		},
-            		tooltips: {
-            			mode: 'nearest',
-            			intersect: false,
-            			callbacks: {
-                           label: function(tooltipItems, data) {
-                           return 'Temperature: ' + tooltipItems.yLabel + '°C';
-                           }
-                        }
-            		},
-            		hover: {
-            			mode: 'nearest',
-            			intersect: false
-            		},
-            		scales: {
-            			xAxes: [{
-            			     type: 'time',
-                                time: {
-                                  unit: 'hour',
-                                  unitStepSize: 1,
-                                  displayFormats: {
-                                    'second': 'HH:mm:ss a',
-
-                                   }
-                                  },
-            				display: true,
-            				gridLines: {
-                                      color: 'rgb(255, 255, 255)'
-                                  },
-                                  ticks: {
-                                      fontColor: "white",
-                                  },
-            				scaleLabel: {
-            					display: true,
-            					labelString: 'Time',
-            					fontColor: "white",
-
-            				}
-            			}],
-            			yAxes: [{
-            			    id: 'Temperature',
-            			    position: 'left',
-            				display: true,
-            				gridLines: {
-                                      color: 'rgb(255, 255, 255)',
-                                      zeroLineColor: 'rgb(255, 255, 255)'
-                                  },
-                                  ticks: {
-                                      fontColor: "white",
-                                  },
-            				scaleLabel: {
-            					display: true,
-            					labelString: 'Temperature(°C)',
-            					fontColor: 'rgb(255, 255, 255)',
-
-            				}
-            			}]
-            		}
-            	}
-            };
-
-            var configHumidity = {
-            	type: 'line',
-            	data: {
-            		datasets: [{
-                                 label: 'Humidity',
-                                 yAxisID: 'Humidity',
-                                 fontColor: '#fff',
-                                 backgroundColor: 'rgb(54, 162, 235)',
-                                 borderColor: 'rgb(54, 162, 235)',
-                                 data: [{% for item in humidityData %}
-                                       {% if not loop.last%}
-                                           {x: '{{item[0]}}', y: {{item[1]}}},
-                                         {% else %}
-                                             {x: '{{item[0]}}', y: {{item[1]}} }
-                                        {% endif %}
-                                       {% endfor %}],
-
-                                 fill: false
-                               }],
-            		             lineTension: 0
-            	},
-            	options: {
-            		responsive: true,
-            		legend: {
-                               labels: {
-                               fontColor: 'white'
-                              }
-                            },
-            		title: {
-            			display: true,
-                             fontColor: "white",
-            			text: 'Humidity Graph',
-
-            		},
-            		tooltips: {
-            			mode: 'nearest',
-            			intersect: false,
-            			callbacks: {
-                           label: function(tooltipItems, data) {
-                           return 'Humidity: ' + tooltipItems.yLabel + '%';
-                           }
-                        }
-            		},
-            		hover: {
-            			mode: 'nearest',
-            			intersect: false
-            		},
-            		scales: {
-            			xAxes: [{
-            			     type: 'time',
-                                time: {
-                                  unit: 'hour',
-                                  unitStepSize: 1,
-                                  displayFormats: {
-                                    'second': 'HH:mm:ss a',
-
-                                   }
-                                  },
-            				display: true,
-            				gridLines: {
-                                      color: 'rgb(255, 255, 255)'
-                                  },
-                                  ticks: {
-                                      fontColor: "white",
-                                  },
-            				scaleLabel: {
-            					display: true,
-            					labelString: 'Time',
-            					fontColor: "white",
-
-            				}
-            			}],
-            			yAxes: [{
-            			    id: 'Humidity',
-            			    position: 'left',
-            				display: true,
-            				gridLines: {
-                                      color: 'rgb(255, 255, 255)',
-                                      zeroLineColor: 'rgb(255, 255, 255)'
-                                  },
-                                  ticks: {
-                                      fontColor: "white",
-                                  },
-            				scaleLabel: {
-            					display: true,
-            					labelString: 'Humidity(%)',
-            					fontColor: 'rgb(255, 255, 255)',
-
-            				}
-            			}]
-            		}
-            	}
-            };
-
-
+            <div class="col-md-6">
+               <div style="width:100%;">
+                  <canvas id="canvasHumidity" ></canvas>
+               </div>
+            </div>
+         </div>
+         <script>
             window.onload = function() {
-
-            	var ctxTemperature = document.getElementById('canvasTemperature').getContext('2d');
-            	window.myLine = new Chart(ctxTemperature, configTemperature);
-
-            	var ctxHumidity = document.getElementById('canvasHumidity').getContext('2d');
-            	window.myLine = new Chart(ctxHumidity, configHumidity);
-
+              {% if running== true %}
+                timer("{{rundate}}", 'runTime');
+              {% endif %}
             };
 
+            function timer(countFrom, id) {
+              countFrom = new Date(countFrom).getTime();
+              var now = new Date(),
+                  countFrom = new Date(countFrom),
+                  timeDifference = (now - countFrom);
+
+              var secondsInADay = 60 * 60 * 1000 * 24,
+                  secondsInAHour = 60 * 60 * 1000;
+
+              days = Math.floor(timeDifference / (secondsInADay) * 1);
+              hours = Math.floor((timeDifference % (secondsInADay)) / (secondsInAHour) * 1);
+              minutes = Math.floor(((timeDifference % (secondsInADay)) % (secondsInAHour)) / (60 * 1000) * 1);
+              seconds = Math.floor((((timeDifference % (secondsInADay)) % (secondsInAHour)) % (60 * 1000)) / 1000 * 1);
+
+              var e = document.getElementById(id);
+              e.innerHTML ="<b>Runtime:</b> "+ days+" days "+hours+" hours "+ minutes+" minutes "+ seconds +" seconds";
+              clearTimeout(timer.interval);
+              timer.interval = setTimeout(function(){ timer(countFrom, id); }, 1000);
+            }
+
+            displayCharts();
+
+            setInterval(function() {
+             displayCharts();
+            }, 10000);
+
+            function displayCharts(){
+                    var getData = $.get('/data');
+
+                    getData.done(function(results){
+
+                        var latestTempValue = results.temperatureData[ 0][1];
+                        var latestTempTime = results.temperatureData[ 0][0];
+                        var tempValueElement = document.getElementById("temperatureValue");
+                        tempValueElement.innerHTML = latestTempValue + " °C"
+                        var tempTimeElement = document.getElementById("temperatureTime");
+                        tempTimeElement.innerHTML = latestTempTime
+
+                        console.log("Temp: "+latestTempValue +" @"+latestTempTime);
+
+                        var latestHumidityValue = results.humidityData[ 0][1];
+                        var latestHumidityTime = results.humidityData[0][0];
+                        var humidityValueElement = document.getElementById("humidityValue");
+                        humidityValueElement.innerHTML = latestHumidityValue + " %"
+                        var humidityTimeElement = document.getElementById("humidityTime");
+                        humidityTimeElement.innerHTML = latestHumidityTime
+
+                        console.log("Humidity: "+latestHumidityValue +" @"+latestHumidityTime);
+
+                        var temperatureData = [];
+                        for (var i in results.temperatureData) {
+                            temperatureData.push({
+                                x : new Date(results.temperatureData[i][0]),
+                                y : results.temperatureData[i][1]
+                            });
+                        }
+
+                        var humidityData = [];
+                        for (var i in results.humidityData) {
+                            humidityData.push({
+                                x : new Date(results.humidityData[i][0]),
+                                y : results.humidityData[i][1]
+                            });
+                        }
 
 
+                        var configTemperature = {
+                            type: 'line',
+                            data: {
+                                datasets: [{
+                                             label: 'Temperature',
+                                             yAxisID: 'Temperature',
+                                             fontColor: '#fff',
+                                             backgroundColor: 'rgb(255, 99, 132)',
+                                             borderColor: 'rgb(255, 99, 132)',
+                                             data: temperatureData,
+                                             fill: false
+                                           }],
+                                             lineTension: 0
+                            },
+                            options: {
+                                responsive: true,
+                                legend: {
+                                           labels: {
+                                           fontColor: 'white'
+                                          }
+                                        },
+                                title: {
+                                    display: true,
+                                         fontColor: "white",
+                                    text: 'Temperature Graph',
 
+                                },
+                                tooltips: {
+                                    mode: 'nearest',
+                                    intersect: false,
+                                    callbacks: {
+                                       label: function(tooltipItems, data) {
+                                       return 'Temperature: ' + tooltipItems.yLabel + '°C';
+                                       }
+                                    }
+                                },
+                                hover: {
+                                    mode: 'nearest',
+                                    intersect: false
+                                },
+                                scales: {
+                                    xAxes: [{
+                                         type: 'time',
+                                            time: {
+                                              unit: 'hour',
+                                              unitStepSize: 1,
+                                              displayFormats: {
+                                                'second': 'HH:mm:ss a',
+
+                                               }
+                                              },
+                                        display: true,
+                                        gridLines: {
+                                                  color: 'rgb(255, 255, 255)'
+                                              },
+                                              ticks: {
+                                                  fontColor: "white",
+                                              },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Time',
+                                            fontColor: "white",
+
+                                        }
+                                    }],
+                                    yAxes: [{
+                                        id: 'Temperature',
+                                        position: 'left',
+                                        display: true,
+                                        gridLines: {
+                                                  color: 'rgb(255, 255, 255)',
+                                                  zeroLineColor: 'rgb(255, 255, 255)'
+                                              },
+                                              ticks: {
+                                                  fontColor: "white",
+                                              },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Temperature(°C)',
+                                            fontColor: 'rgb(255, 255, 255)',
+
+                                        }
+                                    }]
+                                }
+                            }
+                        };
+
+                        var configHumidity = {
+                            type: 'line',
+                            data: {
+                                datasets: [{
+                                             label: 'Humidity',
+                                             yAxisID: 'Humidity',
+                                             fontColor: '#fff',
+                                             backgroundColor: 'rgb(54, 162, 235)',
+                                             borderColor: 'rgb(54, 162, 235)',
+                                             data: humidityData,
+                                             fill: false
+                                           }],
+                                             lineTension: 0
+                            },
+                            options: {
+                                responsive: true,
+                                legend: {
+                                           labels: {
+                                           fontColor: 'white'
+                                          }
+                                        },
+                                title: {
+                                    display: true,
+                                         fontColor: "white",
+                                    text: 'Humidity Graph',
+
+                                },
+                                tooltips: {
+                                    mode: 'nearest',
+                                    intersect: false,
+                                    callbacks: {
+                                       label: function(tooltipItems, data) {
+                                       return 'Humidity: ' + tooltipItems.yLabel + '%';
+                                       }
+                                    }
+                                },
+                                hover: {
+                                    mode: 'nearest',
+                                    intersect: false
+                                },
+                                scales: {
+                                    xAxes: [{
+                                         type: 'time',
+                                            time: {
+                                              unit: 'hour',
+                                              unitStepSize: 1,
+                                              displayFormats: {
+                                                'second': 'HH:mm:ss a',
+
+                                               }
+                                              },
+                                        display: true,
+                                        gridLines: {
+                                                  color: 'rgb(255, 255, 255)'
+                                              },
+                                              ticks: {
+                                                  fontColor: "white",
+                                              },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Time',
+                                            fontColor: "white",
+
+                                        }
+                                    }],
+                                    yAxes: [{
+                                        id: 'Humidity',
+                                        position: 'left',
+                                        display: true,
+                                        gridLines: {
+                                                  color: 'rgb(255, 255, 255)',
+                                                  zeroLineColor: 'rgb(255, 255, 255)'
+                                              },
+                                              ticks: {
+                                                  fontColor: "white",
+                                              },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Humidity(%)',
+                                            fontColor: 'rgb(255, 255, 255)',
+
+                                        }
+                                    }]
+                                }
+                            }
+                        };
+
+                    var ctxTemperature = document.getElementById('canvasTemperature').getContext('2d');
+                    window.myLine = new Chart(ctxTemperature, configTemperature);
+
+                    var ctxHumidity = document.getElementById('canvasHumidity').getContext('2d');
+                    window.myLine = new Chart(ctxHumidity, configHumidity);
+
+                });
+            }
          </script>
       </div>
-
-
    </body>
 </html>
