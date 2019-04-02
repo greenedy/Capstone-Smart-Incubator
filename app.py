@@ -8,7 +8,8 @@ import html
 
 app = Flask(__name__)
 
-#if url is emoty then it redirects to the login
+
+# Empty URL redirects to the login page if not logged in or dashboard if already logged in
 @app.route('/')
 def home():
     if not session.get('logged_in'):
@@ -16,8 +17,9 @@ def home():
     else:
         return redirect(url_for('dashboard_load'))
 
-#The register url loads the register html page
-#Add variable for user and pass for pi switch
+
+# The register url loads the register html page
+# Register page allows user to create username and password
 @app.route('/register')
 def register_load():
     if not session.get('logged_in'):
@@ -32,10 +34,12 @@ def register_load():
         return redirect(url_for('dashboard_load'))
 
 
+# Username and Password are sent to database
+# Password is encrypted
 @app.route('/register', methods=['POST'])
 def do_register():
-    if request.method == 'POST':
 
+    if request.method == 'POST':
         username = request.form['username']
         password = sha256_crypt.hash(request.form['password'])
 
@@ -45,8 +49,13 @@ def do_register():
         cursor.execute(query, (username, password))
         mydb.commit()
         cursor.close()
+
         return redirect(url_for('login_load'))
 
+
+# The Login url loads the login page
+# Login page allows user to input their username and password to login
+# Other URL's redirect to this page if user is not logged in
 @app.route('/login')
 def login_load():
     if not session.get('logged_in'):
@@ -61,10 +70,12 @@ def login_load():
         return redirect(url_for('dashboard_load'))
 
 
+# Check users inputted username and password with user in the database
+# If authenticated then redirect to dashboard page else display "Incorrect username/Password" message
 @app.route('/login', methods=['POST'])
-def do_admin_login():
-    if request.method == 'POST':
+def do_login():
 
+    if request.method == 'POST':
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
         cursor = mydb.cursor(buffered=True)
         cursor.execute("SELECT * from users")
@@ -80,6 +91,7 @@ def do_admin_login():
             return redirect(url_for('register_load'))
 
 
+# Signs out user  and redirects to the login page
 @app.route('/logout')
 def do_admin_logout():
     if session.get('logged_in'):
@@ -90,13 +102,20 @@ def do_admin_logout():
         return redirect(url_for('login_load'))
 
 
+# The dashboard url loads the dashboard page
+# The dashboard URL also handles POST methods from the dashboard for Stop(Config), Run(Config) and Dismiss(Notification)
 @app.route("/dashboard", methods=['GET', 'POST'])
 def dashboard_load():
+
+    # Redirect to login if not signed in
     if not session.get('logged_in'):
         return redirect(url_for('login_load'))
 
     else:
+
         if request.method == 'POST':
+
+            # A "Stop" form action stops the current running configuration
             if request.form['action'] == "Stop":
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
                 cursor = mydb.cursor(buffered=True)
@@ -106,10 +125,10 @@ def dashboard_load():
                     query = "UPDATE `configurations` SET `running` = '0' WHERE `id` = " + str(runningconfig)
                     cursor.execute(query)
                     mydb.commit()
-
-
                 cursor.close()
                 return redirect(url_for('dashboard_load'))
+
+            # A "Run" form action runs the current selected configuration
             elif request.form['action'] == "Run":
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
                 cursor = mydb.cursor(buffered=True)
@@ -123,6 +142,8 @@ def dashboard_load():
                 cursor.close()
                 os.system('python /scripts/incubator.py')
                 return redirect(url_for('dashboard_load'))
+
+            # A "Dismiss" form action dismisses(sets database value of dismissed to 1) the notification selected
             elif request.form['action'] == "Dismiss":
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
                 cursor = mydb.cursor(buffered=True)
@@ -132,72 +153,61 @@ def dashboard_load():
                 mydb.commit()
                 cursor.close()
                 return redirect(url_for('dashboard_load'))
+
+        # Else the dashboard loads
         else:
 
             # Connect to database
             mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
             mycursor = mydb.cursor(buffered=True)
 
-            now = datetime.datetime.now()
-            nowString = now.strftime("%Y-%m-%d %H:%M:%S")
-            yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
-            yesterdayString = yesterday.strftime("%Y-%m-%d %H:%M:%S")
-
-            mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
-
-            myresult = mycursor.fetchall()
-
-            mycursor.execute("SELECT * FROM notifications WHERE dismissed = 0 AND timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
-
+            # Get undismissed Notifications
+            mycursor.execute("SELECT * FROM notifications WHERE dismissed = 0 ORDER BY timestamp DESC; ")
             notifications = mycursor.fetchall()
 
+            # Get Selected Configuration
             mycursor.execute("SELECT * from configurations WHERE selected = 1")
+
+            running = False
+            starttime = ""
+
+            # If a selected configuration exists
             if mycursor.rowcount != 0:
                 selectedconfig = mycursor.fetchall()[0]
 
+                # Check if the selected configuration is running
                 if selectedconfig[8] == 1:
-                    running=True
+                    running = True
                     starttime = selectedconfig[9]
-                else:
-                    running=False
-                    starttime =""
 
+            # Else a selected configuration does not exist so a blank selectedconfig is created
             else:
                 selectedconfig = ["", "", "", "", "", "", "", "", "", ""]
 
-            temperatureData = []
-            humidityData = []
-
-            if not myresult:
-                temperatureData.append(["0000-00-00 00:00:00", "0.0"])
-                humidityData.append(["0000-00-00 00:00:00", "0.0"])
-
-            else:
-                for row in myresult:
-                    temperatureData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"),str(row[1]).lstrip() ])
-                    humidityData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"),str(row[0]).lstrip() ])
-
-            templateData = {
-                'temperatureData': temperatureData,
-                'humidityData': humidityData
-            }
-            return render_template('dashboard.html', **templateData, notifications=notifications, selectedconfig=selectedconfig, running=running, rundate=starttime)
+            return render_template('dashboard.html', notifications=notifications, selectedconfig=selectedconfig, running=running, rundate=starttime)
 
 
+# The data url provides a json object of data from the database
 @app.route('/data')
 def data():
     # Connect to database
     mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
     mycursor = mydb.cursor()
+
+    # Get values from database from the last 24 hours
     now = datetime.datetime.now()
     nowString = now.strftime("%Y-%m-%d %H:%M:%S")
     yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
     yesterdayString = yesterday.strftime("%Y-%m-%d %H:%M:%S")
 
     mycursor.execute("SELECT * FROM incubator WHERE timestamp BETWEEN '"+yesterdayString+"' AND '"+nowString+"' ORDER BY timestamp DESC; ")
-
     myresult = mycursor.fetchall()
 
+    # Get undismissed Notifications
+    mycursor.execute("SELECT * FROM notifications WHERE dismissed = 0 ORDER BY timestamp DESC; ")
+    notifications = mycursor.fetchall()
+
+    # Add data from database to temperature and humidity arrays
     temperatureData = []
     humidityData = []
 
@@ -210,16 +220,23 @@ def data():
             temperatureData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"), str(row[1]).lstrip()])
             humidityData.append([row[3].strftime("%Y-%m-%d %H:%M:%S"), str(row[0]).lstrip()])
 
-    return jsonify({'temperatureData' : temperatureData, 'humidityData' : humidityData})
+    return jsonify({'temperatureData': temperatureData, 'humidityData': humidityData})
 
 
+# The configurations url loads the configurations page
+# The configurations URL also handles POST methods from the dashboard for Stop(Config), Run(Config) and Dismiss(Notification)
 @app.route('/configurations', methods=['GET', 'POST'])
-def get_data():
+def configuration_load():
+
+    # Redirect to login if not signed in
     if not session.get('logged_in'):
         return redirect(url_for('login_load'))
 
     else:
+
         if request.method == 'POST':
+
+            # An "Add" form action adds a new configuration to the database
             if request.form['action'] == "Add":
                 name = request.form['name']
                 species = request.form['species']
@@ -234,7 +251,9 @@ def get_data():
                 cursor.execute(query,(name,species,temperature,humidity,duration,notes))
                 mydb.commit()
                 cursor.close()
-                return redirect(url_for('get_data'))
+                return redirect(url_for('configuration_load'))
+
+            # An "Edit" form action updates a configuration in the database
             elif request.form['action'] == "Edit":
                 name = request.form['name']
                 species = request.form['species']
@@ -255,7 +274,9 @@ def get_data():
                 cursor.execute(query)
                 mydb.commit()
                 cursor.close()
-                return redirect(url_for('get_data'))
+                return redirect(url_for('configuration_load'))
+
+            # A "Delete" form action deletes a configuration from the database
             elif request.form['action'] == "Delete":
                 configid = request.form['configId']
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
@@ -264,7 +285,9 @@ def get_data():
                 cursor.execute(query)
                 mydb.commit()
                 cursor.close()
-                return redirect(url_for('get_data'))
+                return redirect(url_for('configuration_load'))
+
+            # A "Select" form action sets a configuration in the database to selected
             elif request.form['action'] == "Select":
                 configid = request.form['configId']
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
@@ -280,8 +303,13 @@ def get_data():
                 query = "TRUNCATE `smartincubator`.`incubator`;"
                 cursor.execute(query)
                 mydb.commit()
+                query = "TRUNCATE `smartincubator`.`notifications`;"
+                cursor.execute(query)
+                mydb.commit()
                 cursor.close()
-                return redirect(url_for('get_data'))
+                return redirect(url_for('configuration_load'))
+
+            # A "Stop" form action stops the current running configuration
             elif request.form['action'] == "Stop":
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
                 cursor = mydb.cursor(buffered=True)
@@ -292,7 +320,9 @@ def get_data():
                     cursor.execute(query)
                     mydb.commit()
                 cursor.close()
-                return redirect(url_for('get_data'))
+                return redirect(url_for('configuration_load'))
+
+            # A "Run" form action runs the current selected configuration
             elif request.form['action'] == "Run":
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
                 cursor = mydb.cursor(buffered=True)
@@ -304,35 +334,47 @@ def get_data():
                     cursor.execute(query)
                     mydb.commit()
                 cursor.close()
-                return redirect(url_for('get_data'))
+                return redirect(url_for('configuration_load'))
+
+        # Else the configurations page loads
         else:
             mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
             cursor = mydb.cursor(buffered=True)
+
+            # Get all the configurations
             cursor.execute("SELECT * from configurations")
             configs = cursor.fetchall()
+
+            # Get the current selected configuration
             cursor.execute("SELECT * from configurations WHERE selected = 1")
+
+            running = False
+            starttime = ""
+
+            # If a selected configuration exists
             if cursor.rowcount != 0:
                 selectedconfig = cursor.fetchall()[0]
 
+                # Check if the selected configuration is running
                 if selectedconfig[8] == 1:
                     running = True
                     starttime = selectedconfig[9]
 
-                else:
-                    running = False
-                    starttime = ""
-
+            # Else a selected configuration does not exist so a blank selectedconfig is created
             else:
                 selectedconfig = ["", "", "", "", "", "", "", "", "", ""]
 
+            # If there are n configurations create a blank array of configs
             if not configs:
                 configs = []
 
             return render_template("configurations.html", configs=configs, selectedconfig=selectedconfig, running=running, rundate=starttime)
 
-
+# The settings url loads the settings page
 @app.route("/settings")
 def settings_load():
+
+    # Redirect to login if not signed in
     if not session.get('logged_in'):
         return redirect(url_for('login_load'))
 
@@ -341,24 +383,19 @@ def settings_load():
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
         mycursor = mydb.cursor()
 
-        now = datetime.datetime.now()
-        timeString = now.strftime("%Y-%m-%d %H:%M")
+        # Select settings from the database
+        mycursor.execute("SELECT * FROM settings")
 
-        #mycursor.execute("SELECT * FROM settings")
+        myresult = mycursor.fetchall();
 
-        # myresult = mycursor.fetchall();
-
-        # for row in myresult:
+        return render_template('settings.html')
 
 
-        templateData = {
-
-        }
-        return render_template('settings.html', **templateData)
-
-
+# The help url loads the help page
 @app.route("/help")
 def help_load():
+
+    # Redirect to login if not signed in
     if not session.get('logged_in'):
         return redirect(url_for('login_load'))
 

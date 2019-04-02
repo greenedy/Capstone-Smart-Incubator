@@ -9,9 +9,9 @@
       <link rel="shortcut icon" href="/static/image/favicon.ico">
       <style>
          @media (min-width: 1200px) {
-            .container{
-               max-width: 85%;
-            }
+         .container{
+         max-width: 85%;
+         }
          }
       </style>
    </head>
@@ -39,7 +39,9 @@
                </li>
             </ul>
             <ul id="logout_sidebar_button" class="nav nav-sidebar ">
-               <li class="text-center"><p>User:{{session['username']}}</p></li>
+               <li class="text-center">
+                  <p>User:{{session['username']}}</p>
+               </li>
                <li><a href="/logout"><button type="button" class="btn btn-primary btn-block" data-target="#" >Logout</button></a></li>
             </ul>
          </div>

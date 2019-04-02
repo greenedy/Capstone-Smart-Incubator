@@ -12,9 +12,9 @@
       <link rel="shortcut icon" href="/static/image/favicon.ico">
       <style>
          @media (min-width: 1200px) {
-            .container{
-               max-width: 85%;
-            }
+         .container{
+         max-width: 85%;
+         }
          }
       </style>
    </head>
@@ -42,7 +42,9 @@
                </li>
             </ul>
             <ul id="logout_sidebar_button" class="nav nav-sidebar ">
-               <li class="text-center"><p>User:{{session['username']}}</p></li>
+               <li class="text-center">
+                  <p>User:{{session['username']}}</p>
+               </li>
                <li><a href="/logout"><button type="button" class="btn btn-primary btn-block" data-target="#" >Logout</button></a></li>
             </ul>
          </div>
@@ -51,51 +53,50 @@
          <div class="justify-content-between border-bottom pt-3">
             <h1 class="h2">Settings</h1>
          </div>
-               <form action="/settings" method="POST">
-                     <input type="hidden" name="action" value="Add">
-                     <div class="modal-body bg-secondary">
-                         <div class="container">
-                        <table class="text-center">
-                            <tr>
-                                <td class="text-right pr-1 pb-3"><b>T Unit:</b></td>
-                                <td class="pb-3">
-                                   <select name = "tunit">
-                                      <option value="celcius">Celcius</option>
-                                      <option value="farenheit">Farenheit</option>
-                                   </select> </td>
-                            </tr>
-                        <tr class="pb-1">
-                            <td class="text-right pr-1 pb-3"><b>Refresh Rate:</b></td>
-                           <td class="pb-3">
-                                   <select name = "refreshrate">
-                                      <option value="celcius">Fast</option>
-                                      <option value="farenheit">Medium</option>
-                                      <option value="farenheit">Slow</option>
-                                   </select>
-                           </td>
-                        </tr>
-
-                        <tr class="pb-1">
-                            <td class="text-right pr-1 pb-3"><b>Email Notifications:</b></td>
-                           <td class="pb-3">
-                              <label class="switch">
-                                <input type="checkbox" name="emailnot">
-                                <span class="slider round"></span>
-                              </label>
-                           </td>
-                        </tr>
-
-                        <tr class="hideemail">
-                            <td class="text-right pr-1 pb-3"><b>Email:</b></td>
-                            <td class="pb-3"><input type="email" class="form-control" name="email"></td>
-                        </tr>
-                        </table>
-                     </div>
-                     </div>
-                     <div class="modal-footer bg-secondary">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                     </div>
-      </form>
+         <form action="/settings" method="POST">
+            <input type="hidden" name="action" value="Add">
+            <div class="modal-body bg-secondary">
+               <div class="container">
+                  <table class="text-center">
+                     <tr>
+                        <td class="text-right pr-1 pb-3"><b>T Unit:</b></td>
+                        <td class="pb-3">
+                           <select name = "tunit">
+                              <option value="celcius">Celcius</option>
+                              <option value="farenheit">Farenheit</option>
+                           </select>
+                        </td>
+                     </tr>
+                     <tr class="pb-1">
+                        <td class="text-right pr-1 pb-3"><b>Refresh Rate:</b></td>
+                        <td class="pb-3">
+                           <select name = "refreshrate">
+                              <option value="celcius">Fast</option>
+                              <option value="farenheit">Medium</option>
+                              <option value="farenheit">Slow</option>
+                           </select>
+                        </td>
+                     </tr>
+                     <tr class="pb-1">
+                        <td class="text-right pr-1 pb-3"><b>Email Notifications:</b></td>
+                        <td class="pb-3">
+                           <label class="switch">
+                           <input type="checkbox" name="emailnot">
+                           <span class="slider round"></span>
+                           </label>
+                        </td>
+                     </tr>
+                     <tr class="hideemail">
+                        <td class="text-right pr-1 pb-3"><b>Email:</b></td>
+                        <td class="pb-3"><input type="email" class="form-control" name="email"></td>
+                     </tr>
+                  </table>
+               </div>
+            </div>
+            <div class="modal-footer bg-secondary">
+               <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+         </form>
       </div>
    </body>
 </html>
