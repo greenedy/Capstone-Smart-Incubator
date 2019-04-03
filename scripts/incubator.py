@@ -96,12 +96,12 @@ def running(runningFlag):
                 if temp > int(temperatureThreshold) + 3:
                     print("Inserting temperature notification into the database...")
                     query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
-                    cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f} °C".format(temp), "error"))
+                    cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f}  degrees C".format(temp), "error"))
                     mydb.commit()
                 elif temp <= int(temperatureThreshold) - 3:
                     print("Inserting temperature notification into the database...")
                     query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
-                    cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f} °C".format(temp), "error"))
+                    cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f}  degrees C".format(temp), "error"))
                     mydb.commit()
 
             # Check if humidity notification needs to be sent
