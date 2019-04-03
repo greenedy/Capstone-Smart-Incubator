@@ -61,25 +61,23 @@
                   <h1 class="h2">Dashboard: </h1>
                </div>
                <div class="col-sm-6 float-right">
-                   
-                         <h5><b>Selected Configuration: </b>{{selectedconfig[1]}}
-
-                            <b>&nbsp;&nbsp;&nbsp;Status:</b>
-                              {% if selectedconfig[8]== 0 %}
-                                  Not Running
-                              {% endif %}
-                              {% if selectedconfig[8]== 1 %}
-                                Running
-                              {% endif %}
-
-                              {% if selectedconfig[8]== 0 %}
-                                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#runConfigurationModal">Run</button>
-                              {% endif %}
-                              {% if selectedconfig[8]== 1 %}
-                                  <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#stopConfigurationModal">Stop</button>
-                                  <h6><b>Runtime: </b>{{runtime}}</h6>
-                              {% endif %}
-                            </h5>
+                  <h5>
+                     <b>Selected Configuration: </b>{{selectedconfig[1]}}
+                     <b>&nbsp;&nbsp;&nbsp;Status:</b>
+                     {% if selectedconfig[8]== 0 %}
+                     Not Running
+                     {% endif %}
+                     {% if selectedconfig[8]== 1 %}
+                     Running
+                     {% endif %}
+                     {% if selectedconfig[8]== 0 %}
+                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#runConfigurationModal">Run</button>
+                     {% endif %}
+                     {% if selectedconfig[8]== 1 %}
+                     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#stopConfigurationModal">Stop</button>
+                     <h6 id="runTime"></h6>
+                     {% endif %}
+                  </h5>
                </div>
             </div>
          </div>

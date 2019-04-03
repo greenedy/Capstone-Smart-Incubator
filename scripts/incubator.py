@@ -56,7 +56,7 @@ def running(runningFlag):
         cursor.execute("SELECT temperature, humidity FROM configurations WHERE running = 1;")
         current = cursor.fetchone()
         print(current)
-        if (current is None):
+        if current is None:
             print("No running configuration found. Return to wait")
             runningFlag = False;
             waiting(runningFlag)
@@ -79,44 +79,44 @@ def running(runningFlag):
 
             # Check the sensor readings
             print("Sensor data found. Processing...")
-            if (temp > int(temperatureThreshold)):
+            if temp > int(temperatureThreshold):
                 GPIO.output(PWR, False)
                 RELAY_POWER = 'OFF'
-            elif (temp <= int(temperatureThreshold)):
+            elif temp <= int(temperatureThreshold):
                 GPIO.output(PWR, True)
                 RELAY_POWER = 'ON'
 
-            # Check if temperature notification needs to be sent
-            if (temp > int(temperatureThreshold) + 3):
-                print("Inserting temperature notification into the database...")
-                query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
-                cursor.execute(query, (
-                "Incubator temperature is " + str(temp) + " °C", "Incubator temperature is " + str(temp) + " °C",
-                "error"))
-                mydb.commit()
-            elif (temp <= int(temperatureThreshold) - 3):
-                print("Inserting temperature notification into the database...")
-                query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
-                cursor.execute(query, (
-                "Incubator temperature is " + str(temp) + " °C", "Incubator temperature is " + str(temp) + " °C",
-                "error"))
-                mydb.commit()
+                # Check if temperature notification needs to be sent
+            cursor.execute("SELECT MAX(timestamp) as timestamp,title FROM notifications WHERE title = 'Temperature';")
+            latestTemperatureNotificationTime = cursor.fetchone()
+
+            if datetime.datetime.now() >= latestTemperatureNotificationTime[0] + datetime.timedelta(hours=1):
+                if temp > int(temperatureThreshold) + 3:
+                    print("Inserting temperature notification into the database...")
+                    query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
+                    cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f} °C".format(temp), "error"))
+                    mydb.commit()
+                elif temp <= int(temperatureThreshold) - 3:
+                    print("Inserting temperature notification into the database...")
+                    query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
+                    cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f} °C".format(temp), "error"))
+                    mydb.commit()
 
             # Check if humidity notification needs to be sent
-            if (humidity > int(humidityThreshold) + 3):
-                print("Inserting humidity notification into the database...")
-                query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
-                cursor.execute(query, (
-                "Incubator humidity is " + str(humidity) + " %", "Incubator humidity is " + str(humidity) + " %",
-                "error"))
-                mydb.commit()
-            elif (humidity <= int(humidityThreshold) - 3):
-                print("Inserting humidity notification into the database...")
-                query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
-                cursor.execute(query, (
-                "Incubator humidity is " + str(humidity) + " %", "Incubator humidity is " + str(humidity) + " %",
-                "error"))
-                mydb.commit()
+            cursor.execute("SELECT MAX(timestamp) as timestamp,title FROM notifications WHERE title = 'Humidity';")
+            latestHumidityNotificationTime = cursor.fetchone()
+
+            if datetime.datetime.now() >= latestHumidityNotificationTime[0] + datetime.timedelta(hours=1):
+                if humidity > int(humidityThreshold) + 3:
+                    print("Inserting humidity notification into the database...")
+                    query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
+                    cursor.execute(query, ("Humidity", "Incubator humidity is {:.1f} %".format(humidity), "error"))
+                    mydb.commit()
+                elif humidity <= int(humidityThreshold) - 3:
+                    print("Inserting humidity notification into the database...")
+                    query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
+                    cursor.execute(query, ("Humidity", "Incubator humidity is {:.1f} %".format(humidity), "error"))
+                    mydb.commit()
 
             # Print the current readings
             # os.system('clear')
