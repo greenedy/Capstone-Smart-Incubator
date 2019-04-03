@@ -128,7 +128,7 @@ def running(runningFlag):
             # Add the readings to the database
             print("Inserting data into the database...")
             query = "INSERT INTO incubator(temperature,humidity,power) VALUES(%s,%s,%s)"
-            cursor.execute(query, (temp, humidity, RELAY_POWER))
+            cursor.execute(query, ('{0:0.1f}'.format(temp), '{0:0.1f}'.format(humidity), RELAY_POWER))
             mydb.commit()
 
             # delete readings in database that are over 24 hours old
