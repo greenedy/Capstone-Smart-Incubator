@@ -413,7 +413,7 @@ if __name__ == "__main__":
             print("Found")
         else:
             print("Not Found")
-            subprocess.Popen(["nohup", "python", "scripts/incubator.py"], preexec_fn=os.setpgrp)
+            subprocess.Popen(["nohup", "python", "scripts/incubator.py"], env=os.environ, preexec_fn=os.setpgrp)
     app.run(debug=True, host='127.0.0.1', port=8080)
     #app.secret_key = 'capstone'
     #app.run(host='0.0.0.0', port=80)

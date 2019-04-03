@@ -89,6 +89,8 @@ def running(runningFlag):
                 # Check if temperature notification needs to be sent
             cursor.execute("SELECT MAX(timestamp) as timestamp,title FROM notifications WHERE title = 'Temperature';")
             latestTemperatureNotificationTime = cursor.fetchone()
+            if latestTemperatureNotificationTime[0] is None:
+                latestTemperatureNotificationTime = (datetime.datetime(2000, 1, 1), "Temperature")
 
             if datetime.datetime.now() >= latestTemperatureNotificationTime[0] + datetime.timedelta(hours=1):
                 if temp > int(temperatureThreshold) + 3:
@@ -105,6 +107,8 @@ def running(runningFlag):
             # Check if humidity notification needs to be sent
             cursor.execute("SELECT MAX(timestamp) as timestamp,title FROM notifications WHERE title = 'Humidity';")
             latestHumidityNotificationTime = cursor.fetchone()
+            if latestHumidityNotificationTime[0] is None:
+                latestHumidityNotificationTime = (datetime.datetime(2000, 1, 1), "Humidity")
 
             if datetime.datetime.now() >= latestHumidityNotificationTime[0] + datetime.timedelta(hours=1):
                 if humidity > int(humidityThreshold) + 3:
