@@ -1,10 +1,12 @@
 
 from flask import Flask, flash, redirect, render_template, request, session, abort, url_for, jsonify
 from passlib.hash import sha256_crypt
+#from scripts import incubator
 import mysql.connector
 import datetime
 import os
-import html
+import subprocess
+import psutil
 
 app = Flask(__name__)
 
@@ -80,7 +82,7 @@ def do_login():
         cursor = mydb.cursor(buffered=True)
         cursor.execute("SELECT * from users")
         if cursor.rowcount != 0:
-            myresult = cursor.fetchall()[0];
+            myresult = cursor.fetchall()[0]
             if request.form['username'] == myresult[1] and sha256_crypt.verify(request.form['password'],myresult[2]):
                 session['logged_in'] = True
                 session['username'] = myresult[1]
@@ -140,7 +142,7 @@ def dashboard_load():
                     cursor.execute(query)
                     mydb.commit()
                 cursor.close()
-                os.system('python /scripts/incubator.py')
+                #incubator.waiting(False)
                 return redirect(url_for('dashboard_load'))
 
             # A "Dismiss" form action dismisses(sets database value of dismissed to 1) the notification selected
@@ -405,6 +407,13 @@ def help_load():
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
+
+    for process in psutil.process_iter():
+        if process.cmdline() == ['python', 'incubator.py']:
+            print("Found")
+        else:
+            print("Not Found")
+            subprocess.Popen(["nohup", "python", "scripts/incubator.py"], preexec_fn=os.setpgrp)
     app.run(debug=True, host='127.0.0.1', port=8080)
     #app.secret_key = 'capstone'
     #app.run(host='0.0.0.0', port=80)
