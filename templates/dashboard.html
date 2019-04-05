@@ -21,6 +21,14 @@
          max-width: 85%;
          }
          }
+         .modal-dialog{
+            overflow-y: initial !important
+        }
+        .modal-body{
+            height: 400px;
+            background-color: grey;
+            overflow-y: auto;
+        }
       </style>
    </head>
    <body class="text-white bg-secondary">
@@ -229,7 +237,7 @@
             </div>
             <!-- Notifications modal() -->
             <div class="modal fade" id="notificationsModal" tabindex="-1" role="dialog" aria-labelledby="notificationsModal" aria-hidden="true">
-               <div class="modal-dialog modal-dialog-centered" role="document">
+               <div class="modal-dialog  modal-lg modal-dialog-centered" role="document">
                   <div class="modal-content ">
                      <div class="modal-header bg-primary">
                         <h5 class="modal-title" id="notificationsTitle">Notifications</h5>
@@ -237,6 +245,7 @@
                         <span aria-hidden="true">&times;</span>
                         </button>
                      </div>
+                       <div class="modal-body">
                      <div class="list-group">
                         {% for item in notifications %}
                         {% if item[4]== 0 %}
@@ -292,6 +301,7 @@
                         {% endif %}
                         {% endfor %}
                      </div>
+               </div>
                      <div class="modal-footer bg-secondary">
                         <button type="button" class="btn btn-dark" data-dismiss="modal">Back</button>
                      </div>
@@ -359,16 +369,12 @@
                         var tempTimeElement = document.getElementById("temperatureTime");
                         tempTimeElement.innerHTML = latestTempTime
 
-                        console.log("Temp: "+latestTempValue +" @"+latestTempTime);
-
                         var latestHumidityValue = results.humidityData[ 0][1];
                         var latestHumidityTime = results.humidityData[0][0];
                         var humidityValueElement = document.getElementById("humidityValue");
                         humidityValueElement.innerHTML = latestHumidityValue + " %"
                         var humidityTimeElement = document.getElementById("humidityTime");
                         humidityTimeElement.innerHTML = latestHumidityTime
-
-                        console.log("Humidity: "+latestHumidityValue +" @"+latestHumidityTime);
 
                         var temperatureData = [];
                         for (var i in results.temperatureData) {
