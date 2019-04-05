@@ -561,7 +561,10 @@
                             }
                         };
 
+
+
                     var ctxTemperature = document.getElementById('canvasTemperature').getContext('2d');
+                    if(window.myLine){ window.myLine.destroy();}
                     window.myLine = new Chart(ctxTemperature, configTemperature);
 
                     var ctxHumidity = document.getElementById('canvasHumidity').getContext('2d');
