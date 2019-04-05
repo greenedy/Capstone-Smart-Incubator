@@ -564,11 +564,12 @@
 
 
                     var ctxTemperature = document.getElementById('canvasTemperature').getContext('2d');
-                    if(window.myLine){ window.myLine.destroy();}
-                    window.myLine = new Chart(ctxTemperature, configTemperature);
+                    if(window.myLineT){ window.myLine.destroy();}
+                    window.myLineT = new Chart(ctxTemperature, configTemperature);
 
+                     if(window.myLineH){ window.myLine.destroy();}
                     var ctxHumidity = document.getElementById('canvasHumidity').getContext('2d');
-                    window.myLine = new Chart(ctxHumidity, configHumidity);
+                    window.myLineH = new Chart(ctxHumidity, configHumidity);
 
                 });
             }
