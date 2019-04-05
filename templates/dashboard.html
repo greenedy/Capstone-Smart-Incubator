@@ -386,8 +386,7 @@
                             });
                         }
 
-
-                        var configTemperature = {
+                         var configTemperature = {
                             type: 'line',
                             data: {
                                 datasets: [{
@@ -397,12 +396,16 @@
                                              backgroundColor: 'rgb(255, 99, 132)',
                                              borderColor: 'rgb(255, 99, 132)',
                                              data: temperatureData,
-                                             fill: false
+                                             fill: false,
+                                             pointRadius: 0
                                            }],
                                              lineTension: 0
                             },
                             options: {
                                 responsive: true,
+                                animation: {
+                                    duration: 0
+                                },
                                 legend: {
                                            labels: {
                                            fontColor: 'white'
@@ -414,8 +417,8 @@
                                     text: 'Temperature Graph',
 
                                 },
-                                tooltips: {
-                                    mode: 'nearest',
+                               tooltips: {
+                                    mode: 'index',
                                     intersect: false,
                                     callbacks: {
                                        label: function(tooltipItems, data) {
@@ -430,27 +433,25 @@
                                 scales: {
                                     xAxes: [{
                                          type: 'time',
-                                            time: {
-                                              unit: 'hour',
-                                              unitStepSize: 1,
-                                              displayFormats: {
+                                         display: true,
+                                         scaleLabel: {
+                                            display: true,
+                                            labelString: 'Time',
+                                            fontColor: "white",
+                                         },
+                                         time: {
+                                          unit: 'hour',
+                                          unitStepSize: 1,
+                                          displayFormats: {
                                                 'second': 'HH:mm:ss a',
-
                                                }
-                                              },
-                                        display: true,
+                                         },
                                         gridLines: {
                                                   color: 'rgb(255, 255, 255)'
                                               },
                                               ticks: {
                                                   fontColor: "white",
                                               },
-                                        scaleLabel: {
-                                            display: true,
-                                            labelString: 'Time',
-                                            fontColor: "white",
-
-                                        }
                                     }],
                                     yAxes: [{
                                         id: 'Temperature',
@@ -484,12 +485,16 @@
                                              backgroundColor: 'rgb(54, 162, 235)',
                                              borderColor: 'rgb(54, 162, 235)',
                                              data: humidityData,
-                                             fill: false
+                                             fill: false,
+                                             pointRadius: 0
                                            }],
                                              lineTension: 0
                             },
                             options: {
                                 responsive: true,
+								animation: {
+                                    duration: 0
+                                },
                                 legend: {
                                            labels: {
                                            fontColor: 'white'
@@ -502,7 +507,7 @@
 
                                 },
                                 tooltips: {
-                                    mode: 'nearest',
+                                    mode: 'index',
                                     intersect: false,
                                     callbacks: {
                                        label: function(tooltipItems, data) {
@@ -522,7 +527,6 @@
                                               unitStepSize: 1,
                                               displayFormats: {
                                                 'second': 'HH:mm:ss a',
-
                                                }
                                               },
                                         display: true,
@@ -572,6 +576,8 @@
                     window.myLineH = new Chart(ctxHumidity, configHumidity);
 
                 });
+
+
             }
          </script>
       </div>
