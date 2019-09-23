@@ -4,29 +4,29 @@ import json
 import sys
 import time
 import datetime
-import Adafruit_DHT
+#import Adafruit_DHT
 import os
 import mysql.connector
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 
 # Install the following dependencies:
 # sudo pip3 install Adafruit_DHT
 # sudo apt-get install python3-mysql.connector
 
 # Setup power relay
-GPIO.setmode(GPIO.BCM)
+#GPIO.setmode(GPIO.BCM)
 PWR = 26
-GPIO.setwarnings(False)
-GPIO.setup(PWR, GPIO.OUT)
+#GPIO.setwarnings(False)
+#GPIO.setup(PWR, GPIO.OUT)
 RELAY_POWER = 'OFF'
 
 # Setup sensor
-DHT_TYPE = Adafruit_DHT.AM2302
+#DHT_TYPE = Adafruit_DHT.AM2302
 DHT_PIN = 14
 FREQUENCY_SECONDS = 3
 
 # Connect to the database
-mydb = mysql.connector.connect(host="localhost", user="pi", passwd="klcmc123", database="smartincubator")
+mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
 cursor = mydb.cursor(buffered=True)
 
 runningFlag = False
@@ -37,6 +37,7 @@ def waiting(runningFlag):
         print("Waiting...")
         cursor.execute("SELECT temperature, humidity FROM configurations WHERE running = 1;")
         current = cursor.fetchone()
+
         if (current is None):
             print("No running configuration found. Waiting.")
             time.sleep(2)
@@ -44,6 +45,8 @@ def waiting(runningFlag):
             print("Starting running...")
             runningFlag = True
             running(runningFlag)
+
+            mydb.commit()
 
 
 def running(runningFlag):
@@ -68,7 +71,9 @@ def running(runningFlag):
 
             # Attempt to get the sensor readings
             print("Retrieving sensor readings...")
-            humidity, temp = Adafruit_DHT.read(DHT_TYPE, DHT_PIN)
+            #humidity, temp = Adafruit_DHT.read(DHT_TYPE, DHT_PIN)
+            humidity =20
+            temp = 28
 
             # Skip to the next reading if a valid measurement couldn't be taken.
             # This might happen if the CPU is under a lot of load and the sensor can't be reliably read.
@@ -80,10 +85,10 @@ def running(runningFlag):
             # Check the sensor readings
             print("Sensor data found. Processing...")
             if temp > int(temperatureThreshold):
-                GPIO.output(PWR, False)
+                #GPIO.output(PWR, False)
                 RELAY_POWER = 'OFF'
             elif temp <= int(temperatureThreshold):
-                GPIO.output(PWR, True)
+                #GPIO.output(PWR, True)
                 RELAY_POWER = 'ON'
 
                 # Check if temperature notification needs to be sent
