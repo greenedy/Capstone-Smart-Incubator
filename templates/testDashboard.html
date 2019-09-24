@@ -22,9 +22,8 @@
 </head>
 
 <body id="page-top" style="background-color: #222222;">
-    <div>
+
         <nav class="navbar navbar-light navbar-expand-md bg-dark navigation-clean-button">
-            <div class="container">
                 <div>
                     <span class="navbar-brand" href="#" style="color: rgb(255,255,255);">
                         <img src="/static/image/egg-icon.svg" width="30" height="30" class="" alt="">
@@ -43,7 +42,7 @@
                         <li class="nav-item" role="presentation"><a class="nav-link" href="#" style="color: #ffffff;">Help</a></li>
                     </ul><span class="navbar-text actions"> <a class="btn btn-primary action-button" role="button" href="#" style="background-color: #00a3dd;">Logout</a></span>
                 </div>
-     </div>
+
     </nav>
     </div>
     <div class="modal fade text-break border-dark" id="stopConfigurationModal" role="dialog" tabindex="-1">
@@ -107,8 +106,11 @@
                                     <div class="row">
                                         <div class="col" style="margin-bottom: 5px;">
                                             <div class="row align-items-center no-gutters">
-                                                <div class="col">
+                                                <div class="col col-12">
                                                     <div><strong class="text-white">Name: </strong><span class="text-white">{{selectedconfig[1]}}</span></div>
+                                                </div>
+                                                <div class="col col-12">
+                                                    <div><strong class="text-white">Species: </strong><span class="text-white">{{selectedconfig[2]}}</span></div>
                                                 </div>
                                             </div>
                                             <div class="row align-items-center no-gutters">
@@ -172,13 +174,13 @@
                                                 {% if item[5]== 'error' %}
                                                 <a href="#" class="list-group-item list-group-item-action list-group-item-danger">
                                                    <div class="row">
-                                                       <div class="col col-sm-10 col-md-11 col-lg-11 col-xl-11">
+                                                       <div class="col col-sm-10 col-md-10 col-lg-11 col-xl-11">
                                                             <div class="row">
                                                                <div class="col col-sm-12 col-md-7 col-lg-7 col-xl-7" style="white-space:normal;">
                                                                  Incubator temperature is 28.0 degrees C
                                                                </div>
-                                                                <div class="col col-sm-12 col-md-4 col-lg-4 col-xl-4 ">
-                                                                    <p><small>@2019-09-16 23:04:25</small></p>
+                                                                <div class="col col-sm-12 col-md-4 col-lg-4 col-xl-4 text-center" style="white-space:normal;">
+                                                                    <p><small>@ 2019-09-16 23:04:25</small></p>
                                                                 </div>
 
                                                             </div>
