@@ -8,6 +8,9 @@ import datetime
 import os
 import mysql.connector
 #import RPi.GPIO as GPIO
+from luma.led_matrix.device import max7219
+from luma.core.interface.serial import spi, noop
+from luma.core.virtual import viewport, sevensegment
 
 # Install the following dependencies:
 # sudo pip3 install Adafruit_DHT
@@ -28,6 +31,11 @@ FREQUENCY_SECONDS = 3
 # Connect to the database
 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
 cursor = mydb.cursor(buffered=True)
+
+# Initialize the seven segment display
+serial = spi(port=0, device=0, gpio=noop())
+device = max7219(serial, cascaded=1)
+seg = sevensegment(device)
 
 runningFlag = False
 
@@ -81,6 +89,11 @@ def running(runningFlag):
                 print("No humidity or temperature data returned. Retrying in 2 seconds.")
                 time.sleep(2)
                 continue
+
+            # Print to seven-digit display
+            seg.text = "{0:0.1f} C".format(temp)
+            time.sleep(3)
+            seg.text = "H {0:0.1f}".format(humidity)
 
             # Check the sensor readings
             print("Sensor data found. Processing...")
