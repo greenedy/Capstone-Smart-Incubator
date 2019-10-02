@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Settings</title>
+      <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+      <script src="/static/js/jquery.min.js"></script>
+      <script src="/static/js/bootstrap.min.js"></script>
+      <link href="/static/css/style.css" rel="stylesheet" media="screen">
+      <link href="/static/css/navbar-fixed-left.min.css" rel="stylesheet" >
+      <link rel="shortcut icon" href="/static/image/favicon.ico">
+      <style>
+         @media (min-width: 1200px) {
+         .container{
+         max-width: 85%;
+         }
+         }
+      </style>
+   </head>
+   <body class="text-white bg-secondary">
+      <nav class=" h-100 col-md-2 fixed-top sidebar bg-dark nav-pills">
+         <div class="sidebar-sticky">
+            <nav class="navbar navbar-dark bg-dark">
+               <span class="navbar-brand mx-auto" >
+               <img src="/static/image/egg-icon.svg" width="40" height="40" class="" alt="An icon of an egg">
+               <span class="navbar-brand mb-0 text-center h1 align-middle">Incubator</span>
+               </span>
+            </nav>
+            <ul class="nav flex-column">
+               <li class="nav-item">
+                  <a class="nav-link" href="dashboard">Dashboard</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="configurations">Configurations</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link active" href="settings">Settings</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="help">Help</a>
+               </li>
+            </ul>
+            <ul id="logout_sidebar_button" class="nav nav-sidebar ">
+               <li class="text-center">
+                  <p>User:{{session['username']}}</p>
+               </li>
+               <li><a href="/logout"><button type="button" class="btn btn-primary btn-block" data-target="#" >Logout</button></a></li>
+            </ul>
+         </div>
+      </nav>
+      <div class="container">
+         <div class="justify-content-between border-bottom pt-3">
+            <h1 class="h2">Settings</h1>
+         </div>
+         <form action="/settings" method="POST">
+            <input type="hidden" name="action" value="Add">
+            <div class="modal-body bg-secondary">
+               <div class="container">
+                  <table class="text-center">
+                     <tr>
+                        <td class="text-right pr-1 pb-3"><b>T Unit:</b></td>
+                        <td class="pb-3">
+                           <select name = "tunit">
+                              <option value="celcius">Celcius</option>
+                              <option value="farenheit">Farenheit</option>
+                           </select>
+                        </td>
+                     </tr>
+                     <tr class="pb-1">
+                        <td class="text-right pr-1 pb-3"><b>Refresh Rate:</b></td>
+                        <td class="pb-3">
+                           <select name = "refreshrate">
+                              <option value="celcius">Fast</option>
+                              <option value="farenheit">Medium</option>
+                              <option value="farenheit">Slow</option>
+                           </select>
+                        </td>
+                     </tr>
+                     <tr class="pb-1">
+                        <td class="text-right pr-1 pb-3"><b>Email Notifications:</b></td>
+                        <td class="pb-3">
+                           <label class="switch">
+                           <input type="checkbox" name="emailnot">
+                           <span class="slider round"></span>
+                           </label>
+                        </td>
+                     </tr>
+                     <tr class="hideemail">
+                        <td class="text-right pr-1 pb-3"><b>Email:</b></td>
+                        <td class="pb-3"><input type="email" class="form-control" name="email"></td>
+                     </tr>
+                  </table>
+               </div>
+            </div>
+            <div class="modal-footer bg-secondary">
+               <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+         </form>
+      </div>
+   </body>
+</html>
