@@ -367,12 +367,19 @@
 <script>
          window.onload = function() {
                {% if running== true %}
-                 timer("{{rundate}}", 'runTime1', 'runTime2');
+                 timer("{{rundate}}", 'runTime1', 'runTime2', true);
                {% endif %}
              };
 
-             function timer(countFrom, id1, id2) {
-               countFrom = new Date(countFrom).getTime();
+             function timer(countFrom, id1, id2, first) {
+
+              if(first){
+                var arr = countFrom.toString().split(/[- :]/),
+                countFrom = new Date(arr[0], arr[1]-1, arr[2], arr[3], arr[4], arr[5]).getTime();
+              } else{
+                countFrom = new Date(countFrom).getTime();
+              }
+
                var now = new Date(),
                    countFrom = new Date(countFrom),
                    timeDifference = (now - countFrom);
@@ -390,7 +397,7 @@
                var e2 = document.getElementById(id2);
                e2.innerHTML =days+" d "+hours+" h "+ minutes+" min "+ seconds +" s";
                clearTimeout(timer.interval);
-               timer.interval = setTimeout(function(){ timer(countFrom, id1, id2); }, 1000);
+               timer.interval = setTimeout(function(){ timer(countFrom, id1, id2, false); }, 1000);
              }
 
       </script>

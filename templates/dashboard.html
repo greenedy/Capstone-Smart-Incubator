@@ -472,15 +472,23 @@
      <script>
             window.onload = function() {
               {% if running== true %}
-                timer("{{rundate}}", 'runTime1', 'runTime2');
+                timer("{{rundate}}", 'runTime1', 'runTime2', true);
               {% endif %}
             };
 
-            function timer(countFrom, id1, id2) {
-              countFrom = new Date(countFrom).getTime();
-              var now = new Date(),
-                  countFrom = new Date(countFrom),
-                  timeDifference = (now - countFrom);
+            function timer(countFrom, id1, id2, first) {
+
+            if(first){
+                var arr = countFrom.toString().split(/[- :]/),
+                countFrom = new Date(arr[0], arr[1]-1, arr[2], arr[3], arr[4], arr[5]).getTime();
+            } else{
+                countFrom = new Date(countFrom).getTime();
+            }
+
+            var now = new Date(),
+            countFrom = new Date(countFrom),
+            timeDifference = (now - countFrom);
+
 
               var secondsInADay = 60 * 60 * 1000 * 24,
                   secondsInAHour = 60 * 60 * 1000;
@@ -495,7 +503,7 @@
               var e2 = document.getElementById(id2);
               e2.innerHTML =" "+ days+" d "+hours+" h "+ minutes+" min "+ seconds +" s";
               clearTimeout(timer.interval);
-              timer.interval = setTimeout(function(){ timer(countFrom, id1, id2); }, 1000);
+              timer.interval = setTimeout(function(){ timer(countFrom, id1, id2, false); }, 1000);
             }
 
             displayCharts();
@@ -511,6 +519,7 @@
 
                         var latestTempValue = results.temperatureData[ 0][1];
                         var latestTempTime = results.temperatureData[ 0][0];
+                        latestTempTime.replace(/-/g, '/');
                         var tempValueElement1 = document.getElementById("temperatureValue1");
                         tempValueElement1.innerHTML = latestTempValue + " °C"
                         var tempTimeElement1 = document.getElementById("temperatureTime1");
@@ -523,6 +532,7 @@
 
                         var latestHumidityValue = results.humidityData[ 0][1];
                         var latestHumidityTime = results.humidityData[0][0];
+                        latestHumidityTime.replace(/-/g, '/');
                         var humidityValueElement1 = document.getElementById("humidityValue1");
                         humidityValueElement1.innerHTML = latestHumidityValue + " %"
                         var humidityTimeElement1 = document.getElementById("humidityTime1");
@@ -535,16 +545,18 @@
 
                         var temperatureData = [];
                         for (var i in results.temperatureData) {
+                            var dateValues = results.temperatureData[i][0].toString().split(/[- :]/);
                             temperatureData.push({
-                                x : new Date(results.temperatureData[i][0]),
+                                x : new Date(dateValues[0], dateValues[1]-1, dateValues[2], dateValues[3], dateValues[4], dateValues[5]),
                                 y : results.temperatureData[i][1]
                             });
                         }
 
                         var humidityData = [];
                         for (var i in results.humidityData) {
+                            var dateValues = results.humidityData[i][0].toString().split(/[- :]/);
                             humidityData.push({
-                                x : new Date(results.humidityData[i][0]),
+                                x : new Date(dateValues[0], dateValues[1]-1, dateValues[2], dateValues[3], dateValues[4], dateValues[5]),
                                 y : results.humidityData[i][1]
                             });
                         }
