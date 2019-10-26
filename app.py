@@ -7,6 +7,7 @@ import datetime
 import os
 import subprocess
 import psutil
+import smtplib
 
 app = Flask(__name__)
 
@@ -677,3 +678,20 @@ if __name__ == "__main__":
     app.run(debug=True, host='127.0.0.1', port=8080)
     #app.secret_key = 'capstone'
     #app.run(host='192.168.50.70', port=5000)
+    
+  def send_email():
+      time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+      to = 'email@uottawa.ca'
+      gmail_user = 'email@gmail.com'
+      gmail_pwd = 'password'
+      smtpserver = smtplib.SMTP("smtp.gmail.com",587)
+      smtpserver.ehlo()
+      smtpserver.starttls()
+      smtpserver.ehlo
+      smtpserver.login(gmail_user, gmail_pwd)
+      header = 'To:' + to + '\n' + 'From: ' + gmail_user + '\n' + 'Incubator extreme temperature warning'
+      #print header
+      msg = header + '\n Warning occured at ' + time + '.\n\n'
+      #print msg
+      smtpserver.sendmail(gmail_user, to, msg)
+      smtpserver.close()
