@@ -7,10 +7,12 @@ import datetime
 #import Adafruit_DHT
 import os
 import mysql.connector
+import smtplib
+
 #import RPi.GPIO as GPIO
-from luma.led_matrix.device import max7219
-from luma.core.interface.serial import spi, noop
-from luma.core.virtual import viewport, sevensegment
+#from luma.led_matrix.device import max7219
+#from luma.core.interface.serial import spi, noop
+#from luma.core.virtual import viewport, sevensegment
 
 # Install the following dependencies:
 # sudo pip3 install Adafruit_DHT
@@ -33,11 +35,34 @@ mydb = mysql.connector.connect(host="localhost", user="root", passwd="password",
 cursor = mydb.cursor(buffered=True)
 
 # Initialize the seven segment display
-serial = spi(port=0, device=0, gpio=noop())
-device = max7219(serial, cascaded=1)
-seg = sevensegment(device)
+#serial = spi(port=0, device=0, gpio=noop())
+#device = max7219(serial, cascaded=1)
+#seg = sevensegment(device)
 
 runningFlag = False
+
+#Email Settings
+gmail_user = 'email@gmail.com'
+gmail_pwd = 'password'
+
+
+def send_email(type, message, time):
+    cursor.execute("SELECT name, value FROM settings WHERE name = email;")
+    to_email = cursor.fetchone()
+    if to_email is not None:
+        to = to_email
+        smtpserver = smtplib.SMTP("smtp.gmail.com", 587)
+        smtpserver.ehlo()
+        smtpserver.starttls()
+        smtpserver.ehlo
+        smtpserver.login(gmail_user, gmail_pwd)
+        header = 'To:' + to + '\n' + 'From: ' + gmail_user + '\n' + message
+        # print header
+        msg = header + '\n msg ' + time + '.\n\n'
+        # print msg
+        smtpserver.sendmail(gmail_user, to, msg)
+        smtpserver.close()
+        print("Email Sent")
 
 
 def waiting(runningFlag):
@@ -91,9 +116,9 @@ def running(runningFlag):
                 continue
 
             # Print to seven-digit display
-            seg.text = "{0:0.1f} C".format(temp)
-            time.sleep(3)
-            seg.text = "H {0:0.1f}".format(humidity)
+  #          seg.text = "{0:0.1f} C".format(temp)
+   #         time.sleep(3)
+    #        seg.text = "H {0:0.1f}".format(humidity)
 
             # Check the sensor readings
             print("Sensor data found. Processing...")
@@ -116,11 +141,13 @@ def running(runningFlag):
                     query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
                     cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f}  degrees C".format(temp), "error"))
                     mydb.commit()
+                    send_email("Temperature", "Incubator temperature is {:.1f}  degrees C".format(temp), latestTemperatureNotificationTime)
                 elif temp <= int(temperatureThreshold) - 3:
                     print("Inserting temperature notification into the database...")
                     query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
                     cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f}  degrees C".format(temp), "error"))
                     mydb.commit()
+                    send_email("Temperature", "Incubator temperature is {:.1f}  degrees C".format(temp), latestTemperatureNotificationTime)
 
             # Check if humidity notification needs to be sent
             cursor.execute("SELECT MAX(timestamp) as timestamp,title FROM notifications WHERE title = 'Humidity';")
@@ -134,11 +161,13 @@ def running(runningFlag):
                     query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
                     cursor.execute(query, ("Humidity", "Incubator humidity is {:.1f} %".format(humidity), "error"))
                     mydb.commit()
+                    send_email("Humidity", "Incubator humidity is {:.1f} %".format(humidity), latestHumidityNotificationTime)
                 elif humidity <= int(humidityThreshold) - 3:
                     print("Inserting humidity notification into the database...")
                     query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
                     cursor.execute(query, ("Humidity", "Incubator humidity is {:.1f} %".format(humidity), "error"))
                     mydb.commit()
+                    send_email("Humidity", "Incubator humidity is {:.1f} %".format(humidity), latestHumidityNotificationTime)
 
             # Print the current readings
             # os.system('clear')

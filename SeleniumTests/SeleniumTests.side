@@ -1,0 +1,241 @@
+{
+  "id": "e5998beb-53ca-4a22-8e19-c08e81e56f0f",
+  "version": "2.0",
+  "name": "Incubator",
+  "url": "http://127.0.0.1:8080",
+  "tests": [{
+    "id": "45fb67e7-ebc6-4293-bdb6-1d76d39d7493",
+    "name": "Login",
+    "commands": [{
+      "id": "7754bf02-f6cc-46df-92af-87f92a8ed956",
+      "comment": "",
+      "command": "open",
+      "target": "/logout",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3bd5c232-87a4-488f-9ac6-ac014ae5420b",
+      "comment": "",
+      "command": "waitForElementPresent",
+      "target": "id=username",
+      "targets": [],
+      "value": "3000"
+    }, {
+      "id": "be4c496f-f326-41cc-806e-fc7e57ffeed4",
+      "comment": "",
+      "command": "open",
+      "target": "/login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b20d5beb-00b1-499c-b8b0-5e132457d6e0",
+      "comment": "",
+      "command": "type",
+      "target": "id=username",
+      "targets": [
+        ["id=username", "id"],
+        ["name=username", "name"],
+        ["css=#username", "css:finder"],
+        ["xpath=//input[@id='username']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "test"
+    }, {
+      "id": "c3c3024b-dad5-4306-8c0b-edb2eb4b90e6",
+      "comment": "",
+      "command": "click",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//input[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e48115a4-de40-4009-961d-2076e9bb388b",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//input[2]", "xpath:position"]
+      ],
+      "value": "test"
+    }, {
+      "id": "f5bc1029-0c0f-4499-8a45-ecff9f90e0db",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=//button[@value='Log in']", "xpath:attributes"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "160854cb-c07c-414a-9ba2-94b08cd749d4",
+    "name": "Stop Running Confiuration",
+    "commands": [{
+      "id": "7e6ee4a1-de2d-4b48-80e7-7cf0ae82727d",
+      "comment": "",
+      "command": "open",
+      "target": "/dashboard",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "8ed82c3f-069e-4098-8d95-f2384a77c6a4",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[5]", "xpath:attributes"],
+        ["xpath=//div[@id='content']/div/div[2]/div/div/div[2]/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a068f051-bceb-4fe1-85a4-c3d5a778846d",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[5]", "xpath:attributes"],
+        ["xpath=//div[@id='content']/div/div[2]/div/div/div[2]/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "60260e9f-883a-4500-956e-f91a096326f5",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[5]", "xpath:attributes"],
+        ["xpath=//div[@id='content']/div/div[2]/div/div/div[2]/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "1f2b2c9e-2bd6-4cd9-b942-9aa872f071b1",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-danger:nth-child(2)",
+      "targets": [
+        ["css=.btn-danger:nth-child(2)", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='stopConfigurationModal']/div/div/form/div[2]/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Stop')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "531118db-66a3-4584-a466-1e355c9ec8b2",
+    "name": "Run Selected Configuration",
+    "commands": [{
+      "id": "ed26cfb9-614f-41f9-9713-37c93cc3ff4e",
+      "comment": "",
+      "command": "open",
+      "target": "/dashboard",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c9db0ec3-8f2f-45b3-a80d-ca84f65b6a61",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-lg",
+      "targets": [
+        ["css=.btn-lg", "css:finder"],
+        ["xpath=(//button[@type='button'])[5]", "xpath:attributes"],
+        ["xpath=//div[@id='content']/div/div[2]/div/div/div[2]/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "49b0eb67-f023-41c8-b3b7-ef8d59d5d013",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-success",
+      "targets": [
+        ["css=.btn-success", "css:finder"],
+        ["xpath=(//button[@type='submit'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='runConfigurationModal']/div/div/form/div[2]/button[2]", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/form/div[2]/button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Run')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "49d848dc-8d12-4052-923e-323c98d720e5",
+    "name": "Navigate To Configurations Page",
+    "commands": [{
+      "id": "5ce78a11-89bd-4469-99da-f8cc035fbc56",
+      "comment": "",
+      "command": "open",
+      "target": "/dashboard",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "044a2f26-a8b8-479f-9b94-86c22cf99051",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Configurations",
+      "targets": [
+        ["linkText=Configurations", "linkText"],
+        ["css=.nav-item:nth-child(2) > .nav-link", "css:finder"],
+        ["xpath=//a[contains(text(),'Configurations')]", "xpath:link"],
+        ["xpath=//div[@id='navcol-1']/ul/li[2]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, 'configurations')]", "xpath:href"],
+        ["xpath=//li[2]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Configurations')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "c51b56ab-71b5-40d1-8238-5526292ac03d",
+    "name": "Navigate to Dashboard Page",
+    "commands": [{
+      "id": "fb5bc155-8b0b-425d-8de2-f91886ca0c5b",
+      "comment": "",
+      "command": "open",
+      "target": "/dashboard",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "6fab3665-0f3c-4bdd-87b2-423b1547b9f6",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Dashboard",
+      "targets": [
+        ["linkText=Dashboard", "linkText"],
+        ["css=.active", "css:finder"],
+        ["xpath=//a[contains(text(),'Dashboard')]", "xpath:link"],
+        ["xpath=//div[@id='navcol-1']/ul/li/a", "xpath:idRelative"],
+        ["xpath=(//a[contains(@href, 'dashboard')])[2]", "xpath:href"],
+        ["xpath=//li/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Dashboard')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "936841d4-a3ca-4fe5-885b-fb6573b177ac",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["45fb67e7-ebc6-4293-bdb6-1d76d39d7493", "49d848dc-8d12-4052-923e-323c98d720e5", "c51b56ab-71b5-40d1-8238-5526292ac03d", "531118db-66a3-4584-a466-1e355c9ec8b2", "160854cb-c07c-414a-9ba2-94b08cd749d4"]
+  }],
+  "urls": ["http://127.0.0.1:8080/"],
+  "plugins": []
+}

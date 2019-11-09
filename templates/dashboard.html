@@ -361,7 +361,8 @@
                                 </div>
                              </div>
                              <div class="modal-footer bg-secondary">
-                                <button type="button" class="btn btn-dark" data-dismiss="modal">Back</button>
+                                 <a class="btn btn-dark action-button" role="button" href="/clearAll">Clear All</a>
+                                 <button type="button" class="btn btn-dark" data-dismiss="modal">Back</button>
                              </div>
                           </div>
                        </div>
@@ -472,41 +473,39 @@
      <script>
             window.onload = function() {
               {% if running== true %}
+                console.log("Running");
                 timer("{{rundate}}", 'runTime1', 'runTime2', true);
               {% endif %}
             };
 
             function timer(countFrom, id1, id2, first) {
 
-            if(first){
-                var arr = countFrom.toString().split(/[- :]/),
-                countFrom = new Date(arr[0], arr[1]-1, arr[2], arr[3], arr[4], arr[5]).getTime();
-            } else{
-                countFrom = new Date(countFrom).getTime();
+                if(first){
+                    var arr = countFrom.toString().split(/[- :]/),
+                    countFrom = new Date(arr[0], arr[1]-1, arr[2], arr[3], arr[4], arr[5]).getTime();
+                } else{
+                    countFrom = new Date(countFrom).getTime();
+                }
+
+                var now = new Date(),
+                countFrom = new Date(countFrom),
+                timeDifference = (now - countFrom);
+
+                var secondsInADay = 60 * 60 * 1000 * 24,
+                    secondsInAHour = 60 * 60 * 1000;
+
+                days = Math.floor(timeDifference / (secondsInADay) * 1);
+                hours = Math.floor((timeDifference % (secondsInADay)) / (secondsInAHour) * 1);
+                minutes = Math.floor(((timeDifference % (secondsInADay)) % (secondsInAHour)) / (60 * 1000) * 1);
+                seconds = Math.floor((((timeDifference % (secondsInADay)) % (secondsInAHour)) % (60 * 1000)) / 1000 * 1);
+
+                var e = document.getElementById(id1);
+                e.innerHTML =" "+ days+" days "+hours+" hours "+ minutes+" minutes "+ seconds +" seconds";
+                var e2 = document.getElementById(id2);
+                e2.innerHTML =" "+ days+" d "+hours+" h "+ minutes+" min "+ seconds +" s";
+                clearTimeout(timer.interval);
+                timer.interval = setTimeout(function(){ timer(countFrom, id1, id2, false); }, 1000);
             }
-
-            var now = new Date(),
-            countFrom = new Date(countFrom),
-            timeDifference = (now - countFrom);
-
-
-              var secondsInADay = 60 * 60 * 1000 * 24,
-                  secondsInAHour = 60 * 60 * 1000;
-
-              days = Math.floor(timeDifference / (secondsInADay) * 1);
-              hours = Math.floor((timeDifference % (secondsInADay)) / (secondsInAHour) * 1);
-              minutes = Math.floor(((timeDifference % (secondsInADay)) % (secondsInAHour)) / (60 * 1000) * 1);
-              seconds = Math.floor((((timeDifference % (secondsInADay)) % (secondsInAHour)) % (60 * 1000)) / 1000 * 1);
-
-              var e = document.getElementById(id1);
-              e.innerHTML =" "+ days+" days "+hours+" hours "+ minutes+" minutes "+ seconds +" seconds";
-              var e2 = document.getElementById(id2);
-              e2.innerHTML =" "+ days+" d "+hours+" h "+ minutes+" min "+ seconds +" s";
-              clearTimeout(timer.interval);
-              timer.interval = setTimeout(function(){ timer(countFrom, id1, id2, false); }, 1000);
-            }
-
-            displayCharts();
 
             setInterval(function() {
              displayCharts();
