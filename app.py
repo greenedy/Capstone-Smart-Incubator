@@ -7,7 +7,6 @@ import os
 import subprocess
 import psutil
 
-
 app = Flask(__name__)
 
 
@@ -105,7 +104,6 @@ def do_admin_logout():
 # clears all notifications
 @app.route('/clearAll')
 def do_clear_all():
-
     if not session.get('logged_in'):
         return redirect(url_for('login_load'))
     else:
@@ -401,23 +399,49 @@ def configuration_load():
 
 
 # The settings url loads the settings page
-@app.route("/settings")
+@app.route("/settings", methods=['GET', 'POST'])
 def settings_load():
     # Redirect to login if not signed in
     if not session.get('logged_in'):
         return redirect(url_for('login_load'))
 
     else:
-        # Connect to database
-        mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
-        mycursor = mydb.cursor()
 
-        # Select settings from the database
-        mycursor.execute("SELECT * FROM settings")
+        if request.method == 'POST':
+            receive_email = request.form['receive_email']
+            email = request.form['email']
 
-        myresult = mycursor.fetchall();
+            mydb = mysql.connector.connect(host="localhost", user="root", passwd="password",
+                                           database="smartincubator")
+            cursor = mydb.cursor()
+            query = "UPDATE `settings` SET `name` = 'receiveEmail'," \
+                    " `value` = " + receive_email + "" \
+                    " WHERE `name` = 'receiveEmail'"
+            cursor.execute(query)
+            mydb.commit()
+            query = "UPDATE `settings` SET `name` = 'email'," \
+                    " `value` = '" + email + "'" \
+                    " WHERE `name` = 'email'"
+            cursor.execute(query)
+            mydb.commit()
+            cursor.close()
 
-        return render_template('settings.html')
+            return redirect(url_for('settings_load'))
+
+        # Else the settings page loads
+        else:
+            # Connect to database
+            mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
+            mycursor = mydb.cursor()
+
+            # Select settings from the database
+            mycursor.execute("SELECT value FROM settings where name='receiveEmail'")
+            receive_email = mycursor.fetchone()[0]
+            mycursor.execute("SELECT value FROM settings where name='email'")
+            email = mycursor.fetchone()[0]
+
+
+            return render_template('settings.html', receive_email= receive_email, email = email)
 
 
 if __name__ == "__main__":
@@ -431,6 +455,3 @@ if __name__ == "__main__":
     app.run(debug=True, host='127.0.0.1', port=8080)
     # app.secret_key = 'capstone'
     # app.run(host='192.168.50.70', port=5000)
-
-
-

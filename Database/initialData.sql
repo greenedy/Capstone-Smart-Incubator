@@ -41,3 +41,17 @@ null,
 null,
 0
 );
+
+
+INSERT INTO `smartincubator`.`settings`
+(`name`,
+`value`,
+`type`
+)
+VALUES
+('receiveEmail',
+'0',
+'boolean')
+,('email',
+'',
+'string')

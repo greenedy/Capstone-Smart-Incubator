@@ -41,28 +41,37 @@ cursor = mydb.cursor(buffered=True)
 
 runningFlag = False
 
-#Email Settings
+#SMTP Gmail Settings
 gmail_user = 'email@gmail.com'
 gmail_pwd = 'password'
 
 
 def send_email(type, message, time):
-    cursor.execute("SELECT name, value FROM settings WHERE name = email;")
-    to_email = cursor.fetchone()
-    if to_email is not None:
-        to = to_email
-        smtpserver = smtplib.SMTP("smtp.gmail.com", 587)
-        smtpserver.ehlo()
-        smtpserver.starttls()
-        smtpserver.ehlo
-        smtpserver.login(gmail_user, gmail_pwd)
-        header = 'To:' + to + '\n' + 'From: ' + gmail_user + '\n' + message
-        # print header
-        msg = header + '\n msg ' + time + '.\n\n'
-        # print msg
-        smtpserver.sendmail(gmail_user, to, msg)
-        smtpserver.close()
-        print("Email Sent")
+    print("Attempting to send Email")
+    cursor.execute("SELECT value FROM settings WHERE name = 'receiveEmail';")
+    receive_email = cursor.fetchone()[0]
+    if receive_email == '1':
+        cursor.execute("SELECT value FROM settings WHERE name = 'email';")
+        to_email = cursor.fetchone()[0]
+        if to_email is not None:
+            to = to_email
+            try:
+                smtpserver = smtplib.SMTP("smtp.gmail.com", 587)
+                smtpserver.ehlo()
+                smtpserver.starttls()
+                smtpserver.ehlo
+                smtpserver.login(gmail_user, gmail_pwd)
+                header = 'To:' + to + '\n'\
+                         + 'From: ' + gmail_user + '\n'\
+                         + 'Subject: ' + message + '\n'
+                # print header
+                msg = header + '\n' + message + '\n at ' + time + '.\n\n'
+                # print msg
+                smtpserver.sendmail(gmail_user, to, msg)
+                smtpserver.close()
+                print("Email Sent")
+            except:
+                print("Error sending Email")
 
 
 def waiting(runningFlag):
@@ -141,13 +150,16 @@ def running(runningFlag):
                     query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
                     cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f}  degrees C".format(temp), "error"))
                     mydb.commit()
-                    send_email("Temperature", "Incubator temperature is {:.1f}  degrees C".format(temp), latestTemperatureNotificationTime)
+                    print("Temperature greater than threshold Notification Created");
+                    send_email("Temperature", "Incubator temperature is {:.1f} degrees C".format(temp), datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+
                 elif temp <= int(temperatureThreshold) - 3:
                     print("Inserting temperature notification into the database...")
                     query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
-                    cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f}  degrees C".format(temp), "error"))
+                    cursor.execute(query, ("Temperature", "Incubator temperature is {:.1f} degrees C".format(temp), "error"))
                     mydb.commit()
-                    send_email("Temperature", "Incubator temperature is {:.1f}  degrees C".format(temp), latestTemperatureNotificationTime)
+                    print("Temperature less than threshold Notification Created");
+                    send_email("Temperature", "Incubator temperature is {:.1f} degrees C".format(temp), datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
             # Check if humidity notification needs to be sent
             cursor.execute("SELECT MAX(timestamp) as timestamp,title FROM notifications WHERE title = 'Humidity';")
@@ -161,13 +173,15 @@ def running(runningFlag):
                     query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
                     cursor.execute(query, ("Humidity", "Incubator humidity is {:.1f} %".format(humidity), "error"))
                     mydb.commit()
-                    send_email("Humidity", "Incubator humidity is {:.1f} %".format(humidity), latestHumidityNotificationTime)
+                    print("Humidity greater than threshold Notification Created");
+                    send_email("Humidity", "Incubator humidity is {:.1f} %".format(humidity), datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
                 elif humidity <= int(humidityThreshold) - 3:
                     print("Inserting humidity notification into the database...")
                     query = "INSERT INTO notifications(title,text,type) VALUES(%s,%s,%s)"
                     cursor.execute(query, ("Humidity", "Incubator humidity is {:.1f} %".format(humidity), "error"))
                     mydb.commit()
-                    send_email("Humidity", "Incubator humidity is {:.1f} %".format(humidity), latestHumidityNotificationTime)
+                    print("Humidity less than threshold Notification Created");
+                    send_email("Humidity", "Incubator humidity is {:.1f} %".format(humidity), datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
             # Print the current readings
             # os.system('clear')
