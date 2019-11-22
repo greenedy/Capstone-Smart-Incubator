@@ -5,6 +5,9 @@ import mysql.connector
 import datetime
 import os
 import subprocess
+import random
+import string
+import smtplib
 import psutil
 
 app = Flask(__name__)
@@ -40,6 +43,7 @@ def register_load():
 @app.route('/register', methods=['POST'])
 def do_register():
     if request.method == 'POST':
+        email = request.form['email']
         username = request.form['username']
         password = sha256_crypt.hash(request.form['password'])
 
@@ -48,6 +52,13 @@ def do_register():
         query = "INSERT INTO users(username,password) VALUES(%s,%s)"
         cursor.execute(query, (username, password))
         mydb.commit()
+
+        query = "UPDATE `settings` SET `name` = 'email'," \
+                " `value` = '" + email + "'" \
+                                         " WHERE `name` = 'email'"
+        cursor.execute(query)
+        mydb.commit()
+
         cursor.close()
 
         return redirect(url_for('login_load'))
@@ -78,17 +89,59 @@ def do_login():
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="password", database="smartincubator")
         cursor = mydb.cursor(buffered=True)
         cursor.execute("SELECT * from users")
-        if cursor.rowcount != 0:
-            myresult = cursor.fetchall()[0]
-            #    if request.form['username'] == myresult[1] and sha256_crypt.verify(request.form['password'],myresult[2]):
-            session['logged_in'] = True
-            session['username'] = myresult[1]
-            return redirect(url_for('dashboard_load'))
-        #   else:
-        #       return render_template('login.html', error="Incorrect Username or Password")
-        else:
+        if cursor.rowcount == 0:
             return redirect(url_for('register_load'))
+        else:
+            if request.form['action'] == "login":
+                myresult = cursor.fetchall()[0]
+                if request.form['username'] == myresult[1] and sha256_crypt.verify(request.form['password'], myresult[2]):
+                    session['logged_in'] = True
+                    session['username'] = myresult[1]
+                    return redirect(url_for('dashboard_load'))
+                else:
+                    return render_template('login.html', error="Error: Incorrect Username or Password")
 
+            elif request.form['action'] == 'forgotPassword':
+                myresult = cursor.fetchall()[0]
+                saved_username = myresult[1]
+
+                letters = string.ascii_lowercase
+                generated_password = ''.join(random.choice(letters) for i in range(10))
+
+                new_password = sha256_crypt.hash(generated_password)
+
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password",
+                                               database="smartincubator")
+                cursor = mydb.cursor()
+                query = "UPDATE users SET password = '" + new_password + "' WHERE username = '"+saved_username+"'"
+                cursor.execute(query)
+                mydb.commit()
+                gmail_user = 'eamil@gmail.com'
+                gmail_pwd = 'password'
+
+                cursor.execute("SELECT value FROM settings WHERE name = 'email';")
+                to_email = cursor.fetchone()[0]
+                if to_email is not None:
+                    to = to_email
+                    try:
+                        smtpserver = smtplib.SMTP("smtp.gmail.com", 587)
+                        smtpserver.ehlo()
+                        smtpserver.starttls()
+                        smtpserver.ehlo
+                        smtpserver.login(gmail_user, gmail_pwd)
+                        header = 'To:' + to + '\n' \
+                                    + 'From: ' + gmail_user + '\n' \
+                                    + 'Subject: Incubator Password Reset for '+saved_username+'\n'
+                        # print header
+                        msg = header + '\n Temporary Password:\n' + generated_password + '\n\n'
+                        # print msg
+                        smtpserver.sendmail(gmail_user, to, msg)
+                        smtpserver.close()
+                        print("Password Reset Email Sent")
+                        return render_template('login.html', error="Password Reset Email Sent")
+                    except:
+                        print("Error sending Password Reset Email")
+                        return render_template('login.html', error="Error: Unable to send Password Reset Email")
 
 # Signs out user  and redirects to the login page
 @app.route('/logout')
@@ -265,6 +318,22 @@ def configuration_load():
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password",
                                                database="smartincubator")
                 cursor = mydb.cursor()
+
+                # Get all the configurations
+                cursor.execute("SELECT * from configurations")
+                configs = cursor.fetchall()
+
+                name_already_used = False
+
+                for config in configs:
+                    print(name.lower() ," == ", config[1].lower() ,"(",name.lower == config[1].lower,")")
+                    if name.lower() == config[1].lower():
+                        name_already_used = True
+
+                #check to make sure name is not already used
+                if name_already_used:
+                    return redirect(url_for('configuration_load'))
+
                 query = "INSERT INTO configurations(name,species,temperature,humidity,duration,notes) VALUES(%s,%s,%s,%s,%s,%s)"
                 cursor.execute(query, (name, species, temperature, humidity, duration, notes))
                 mydb.commit()
@@ -284,6 +353,22 @@ def configuration_load():
                 mydb = mysql.connector.connect(host="localhost", user="root", passwd="password",
                                                database="smartincubator")
                 cursor = mydb.cursor()
+
+                # Get all the configurations
+                cursor.execute("SELECT * from configurations")
+                configs = cursor.fetchall()
+
+                name_already_used = False
+
+                for config in configs:
+                    if name.lower() == config[1].lower() and configid != config[0]:
+                        name_already_used = True
+
+                # check to make sure name is not already used
+                if name_already_used:
+                    return redirect(url_for('configuration_load'))
+
+
                 query = "UPDATE `configurations` SET `name` = '" + name + "'," \
                                                                           " `species` = '" + species + "'," \
                                                                                                        "`temperature` = " + temperature + "," \
@@ -406,28 +491,76 @@ def settings_load():
         return redirect(url_for('login_load'))
 
     else:
-
         if request.method == 'POST':
-            receive_email = request.form['receive_email']
-            email = request.form['email']
+            if request.form['action'] == "settings":
+                receive_email = request.form['receive_email']
+                email = request.form['email']
 
-            mydb = mysql.connector.connect(host="localhost", user="root", passwd="password",
-                                           database="smartincubator")
-            cursor = mydb.cursor()
-            query = "UPDATE `settings` SET `name` = 'receiveEmail'," \
-                    " `value` = " + receive_email + "" \
-                    " WHERE `name` = 'receiveEmail'"
-            cursor.execute(query)
-            mydb.commit()
-            query = "UPDATE `settings` SET `name` = 'email'," \
-                    " `value` = '" + email + "'" \
-                    " WHERE `name` = 'email'"
-            cursor.execute(query)
-            mydb.commit()
-            cursor.close()
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password",
+                                               database="smartincubator")
+                cursor = mydb.cursor()
+                query = "UPDATE `settings` SET `name` = 'receiveEmail'," \
+                        " `value` = " + receive_email + "" \
+                        " WHERE `name` = 'receiveEmail'"
+                cursor.execute(query)
+                mydb.commit()
+                query = "UPDATE `settings` SET `name` = 'email'," \
+                        " `value` = '" + email + "'" \
+                        " WHERE `name` = 'email'"
+                cursor.execute(query)
+                mydb.commit()
 
-            return redirect(url_for('settings_load'))
+                cursor.execute("SELECT value FROM settings where name='receiveEmail'")
+                receive_email = cursor.fetchone()[0]
+                cursor.execute("SELECT value FROM settings where name='email'")
+                email = cursor.fetchone()[0]
+                return render_template('settings.html', receive_email=receive_email, email=email,
+                                       settingsMessage="Settings Saved")
+                cursor.close()
 
+                return redirect(url_for('settings_load'))
+
+            elif request.form['action'] == "password":
+                mydb = mysql.connector.connect(host="localhost", user="root", passwd="password",
+                                               database="smartincubator")
+                cursor = mydb.cursor(buffered=True)
+                cursor.execute("SELECT * from users")
+                if cursor.rowcount == 0:
+                    return redirect(url_for('register_load'))
+                else:
+                    myresult = cursor.fetchall()[0]
+                    saved_username = myresult[1]
+                    current_password = request.form['currentPassword']
+                    new_password = request.form['newPassword']
+
+                    if current_password is None:
+                        # Select settings from the database
+                        cursor.execute("SELECT value FROM settings where name='receiveEmail'")
+                        receive_email = cursor.fetchone()[0]
+                        cursor.execute("SELECT value FROM settings where name='email'")
+                        email = cursor.fetchone()[0]
+                        cursor.close()
+                        return render_template('settings.html', receive_email=receive_email, email=email, passwordMessage="Error: Current Password is Incorrect")
+
+                    if sha256_crypt.verify(current_password, myresult[2]):
+                        query = "UPDATE users SET password = '" + sha256_crypt.hash(new_password) + "' WHERE username = '" + saved_username + "'"
+                        cursor.execute(query)
+                        mydb.commit()
+                        # Select settings from the database
+                        cursor.execute("SELECT value FROM settings where name='receiveEmail'")
+                        receive_email = cursor.fetchone()[0]
+                        cursor.execute("SELECT value FROM settings where name='email'")
+                        email = cursor.fetchone()[0]
+                        cursor.close()
+                        return render_template('settings.html', receive_email=receive_email, email=email, passwordMessage = "Password Updated")
+                    else:
+                        # Select settings from the database
+                        cursor.execute("SELECT value FROM settings where name='receiveEmail'")
+                        receive_email = cursor.fetchone()[0]
+                        cursor.execute("SELECT value FROM settings where name='email'")
+                        email = cursor.fetchone()[0]
+                        cursor.close()
+                        return render_template('settings.html', receive_email=receive_email, email=email, passwordMessage="Error: Current Password is Incorrect")
         # Else the settings page loads
         else:
             # Connect to database
@@ -439,7 +572,7 @@ def settings_load():
             receive_email = mycursor.fetchone()[0]
             mycursor.execute("SELECT value FROM settings where name='email'")
             email = mycursor.fetchone()[0]
-
+            mycursor.close()
 
             return render_template('settings.html', receive_email= receive_email, email = email)
 

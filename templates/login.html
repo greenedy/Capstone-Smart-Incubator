@@ -11,11 +11,13 @@
   </head>
 
   <body class="text-center text-white bg-dark">
+  <div class="row">
     <form class="form-signin" action="login" method="POST" >
+      <input type="hidden" name="action" value="login">
       <img class="mb-4" src="/static/image/egg-icon.svg" alt="An icon of an egg" width="72" height="72">
       <h1 class="h3 mb-3 font-weight-normal">Incubator</h1>
       {% if error %}
-        <p class="text-danger"><strong>Error:</strong> {{ error }}</p>
+        <p class="text-danger">{{ error }}</p>
       {% endif %}
       <label for="username" class="sr-only">Username</label>
       <input type="username" name="username" id="username" class="form-control" placeholder="Username" required autofocus>
@@ -23,6 +25,11 @@
       <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
       <button class="btn btn-lg btn-primary btn-block" type="submit" value="Log in">Login</button>
     </form>
+    <form class="form-signin" action="login" method="POST">
+      <input type="hidden" name="action" value="forgotPassword">
+      <button class="btn btn-link" action="login" method="POST">Forgot Username or Password</button>
+    </form>
+  </div>
   </body>
 </html>
 
